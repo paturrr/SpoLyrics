@@ -33,11 +33,11 @@ class MiniLyrics:
         self.is_pinned = False
         self.show_title = True
         
-        self.lbl_title = tk.Label(self.root, text="", fg='#888888', bg='#191414', font=('Arial', 8))
-        self.lbl_title.place(x=8, y=5)
+        self.lbl_title = tk.Label(self.root, text="", fg='#888888', bg='#191414', font=('Arial', 8), anchor='nw', justify='left', wraplength=320)
+        self.lbl_title.place(x=15, y=8)
         
         self.lbl_current = tk.Label(self.root, text="Menunggu lagu...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
-        self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(15, 2))
+        self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(25, 2))
         
         self.lbl_next = tk.Label(self.root, text="", fg='#b3b3b3', bg='#191414', font=('Arial', self.font_nxt), wraplength=330, justify="center")
         self.lbl_next.pack(expand=True, fill='both', padx=10, pady=(0, 15))
@@ -100,6 +100,7 @@ class MiniLyrics:
         self.root.geometry(f"{new_w}x{new_h}")
         self.lbl_current.config(wraplength=new_w - 20)
         self.lbl_next.config(wraplength=new_w - 20)
+        self.lbl_title.config(wraplength=new_w - 30)
         return "break"
 
     def on_font_scroll(self, event):
