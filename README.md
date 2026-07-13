@@ -10,7 +10,6 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics?style=flat-square&color=1DB954&label=stars" alt="Stars">
-  <img src="https://img.shields.io/github/v/release/paturrr/SpoLyrics?style=flat-square&color=1DB954&label=release" alt="Release">
   <img src="https://img.shields.io/badge/os-Windows%2010%2F11-1DB954?style=flat-square" alt="Windows Only">
   <img src="https://img.shields.io/badge/license-MIT-1DB954?style=flat-square" alt="MIT license">
 </p>
