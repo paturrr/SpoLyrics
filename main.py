@@ -31,6 +31,10 @@ class MiniLyrics:
         self.font_cur = 11
         self.font_nxt = 9
         self.is_pinned = False
+        self.show_title = True
+        
+        self.lbl_title = tk.Label(self.root, text="", fg='#888888', bg='#191414', font=('Arial', 8))
+        self.lbl_title.place(x=8, y=5)
         
         self.lbl_current = tk.Label(self.root, text="Menunggu lagu...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
         self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(15, 2))
@@ -49,12 +53,14 @@ class MiniLyrics:
         self.root.bind("<MouseWheel>", self.on_scroll)
         self.root.bind("<Control-MouseWheel>", self.on_font_scroll)
         self.root.bind("<Button-2>", self.toggle_pin)
+        self.root.bind("<Control-Button-1>", self.toggle_title)
         
-        for lbl in (self.lbl_current, self.lbl_next):
+        for lbl in (self.lbl_current, self.lbl_next, self.lbl_title):
             lbl.bind("<B1-Motion>", self.drag)
             
-        for w in (self.lbl_current, self.lbl_next, self.grip):
+        for w in (self.lbl_current, self.lbl_next, self.grip, self.lbl_title):
             w.bind("<Button-1>", self.click)
+            w.bind("<Control-Button-1>", self.toggle_title)
             w.bind("<Double-1>", lambda e: not self.is_pinned and self.root.destroy())
             w.bind("<Button-3>", lambda e: self.media_control('play_pause'))
             w.bind("<MouseWheel>", self.on_scroll)
@@ -66,6 +72,12 @@ class MiniLyrics:
 
     def click(self, event):
         self.x, self.y = event.x, event.y
+        return "break"
+
+    def toggle_title(self, event):
+        if self.is_pinned: return "break"
+        self.show_title = not self.show_title
+        self.lbl_title.config(text=self.current_song if self.show_title else "")
         return "break"
 
     def toggle_pin(self, event):
@@ -112,6 +124,7 @@ class MiniLyrics:
     def update_ui(self, cur, nxt):
         self.lbl_current.config(text=cur)
         self.lbl_next.config(text=nxt)
+        self.lbl_title.config(text=self.current_song if self.show_title else "")
 
     def media_control(self, action):
         if self.is_pinned: return "break"

@@ -52,6 +52,7 @@ This application uses zero conventional buttons to keep the UI perfectly clean. 
 - `Mouse Scroll (Up/Down)`: Next / Previous track
 - `Middle Click (Scroll Wheel or 3-Finger Tap on Touchpad)`: Toggle Pin / Lock Window
   - *When locked, the resize icon changes to a padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Middle click again to unlock.*
+- `Ctrl + Left Click`: Toggle song title visibility
 - `Ctrl + Mouse Scroll`: Increase / Decrease font size
 - `Drag Bottom Right Corner (⇲)`: Resize the window
 - `Double Left Click`: Close the application
