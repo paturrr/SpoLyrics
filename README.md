@@ -55,6 +55,10 @@ Run this single command in your Windows Terminal or Command Prompt (Requires **P
 ```bash
 pip install git+https://github.com/paturrr/SpoLyrics.git
 ```
+*(If you get a `pip is not recognized` error, use this alternative command instead:)*
+```bash
+python -m pip install git+https://github.com/paturrr/SpoLyrics.git
+```
 
 > **⚠️ IMPORTANT (OS Support):** 
 > This app is **Exclusive to Windows**. Because it uses `winsdk` (Windows System Media Transport Controls) to achieve 0-delay performance without third-party servers, it **CANNOT** be installed on macOS or Linux.
