@@ -240,7 +240,21 @@ class MiniLyrics:
                 
         asyncio.run(main_loop())
 
+def create_shortcut():
+    try:
+        import shutil, subprocess
+        shortcut_path = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "SpoLyrics.lnk")
+        if not os.path.exists(shortcut_path):
+            exe_path = shutil.which('spolyrics')
+            if exe_path:
+                icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
+                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
+                subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
+    except:
+        pass
+
 def start_app():
+    create_shortcut()
     app = MiniLyrics()
     app.root.mainloop()
 
