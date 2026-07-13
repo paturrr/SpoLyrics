@@ -20,9 +20,9 @@
 </p>
 
 <p align="center">
-  <img src="assets/hasil1.png" width="45%" alt="SpoLyrics in action">
+  <img src="assets/hasil1.png" alt="SpoLyrics in action">
   &nbsp;
-  <img src="assets/hasil2.png" width="45%" alt="SpoLyrics transparent UI">
+  <img src="assets/hasil2.png" alt="SpoLyrics transparent UI">
 </p>
 
 ---
