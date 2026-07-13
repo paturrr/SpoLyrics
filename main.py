@@ -50,14 +50,16 @@ class MiniLyrics:
         self.root.bind("<Control-MouseWheel>", self.on_font_scroll)
         self.root.bind("<Button-2>", self.toggle_pin)
         
-        for lbl in (self.lbl_current, self.lbl_next, self.grip):
+        for lbl in (self.lbl_current, self.lbl_next):
             lbl.bind("<B1-Motion>", self.drag)
-            lbl.bind("<Button-1>", self.click)
-            lbl.bind("<Double-1>", lambda e: not self.is_pinned and self.root.destroy())
-            lbl.bind("<Button-3>", lambda e: self.media_control('play_pause'))
-            lbl.bind("<MouseWheel>", self.on_scroll)
-            lbl.bind("<Control-MouseWheel>", self.on_font_scroll)
-            lbl.bind("<Button-2>", self.toggle_pin)
+            
+        for w in (self.lbl_current, self.lbl_next, self.grip):
+            w.bind("<Button-1>", self.click)
+            w.bind("<Double-1>", lambda e: not self.is_pinned and self.root.destroy())
+            w.bind("<Button-3>", lambda e: self.media_control('play_pause'))
+            w.bind("<MouseWheel>", self.on_scroll)
+            w.bind("<Control-MouseWheel>", self.on_font_scroll)
+            w.bind("<Button-2>", self.toggle_pin)
 
         self.current_song = ""
         threading.Thread(target=self.poll_song, daemon=True).start()

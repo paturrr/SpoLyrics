@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='spolyrics',
-    version='1.0.0',
+    version='1.0.1',
     description='A minimalist, borderless, zero-delay synced lyrics miniplayer for Spotify on Windows.',
     author='SpoLyrics Team',
     py_modules=['main'],

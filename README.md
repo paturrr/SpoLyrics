@@ -22,6 +22,14 @@
 
 ---
 
+## Background & Feedback
+
+I built this project to solve a specific complaint from my friends: they wanted to listen to songs on Spotify or YouTube Music while working, but the official miniplayers didn't show any lyrics. 
+
+**Note:** This application is still in active development! If you encounter any bugs, have a feature request, or just want to suggest an improvement, please don't hesitate to open an issue or let me know. 
+
+---
+
 ## Key Features
 
 - **Zero-Delay Sync**
@@ -77,6 +85,13 @@ pythonw -m main
 ```
 
 *(Make sure Spotify or your Windows media player is running and playing a song!)*
+
+## Updating
+
+To update the application to the latest version, run:
+```bash
+pip install --upgrade git+https://github.com/paturrr/SpoLyrics.git
+```
 
 ## Uninstallation
 
