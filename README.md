@@ -2,7 +2,7 @@
   <img src="icon.ico" width="150" alt="SpoLyrics Logo">
 </p>
 
-<h1 align="center">SpoLyrics 🎵</h1>
+<h1 align="center">SpoLyrics</h1>
 
 <p align="center">
   <em>A minimalist, transparent, and zero-delay Spotify lyrics miniplayer.</em>
@@ -22,35 +22,37 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- **Zero-Delay Sync ⚡**
+- **Zero-Delay Sync**
   100% precise time synchronization. Pulls real-time duration data directly from the Windows OS core.
   
-- **Smart Duration Match 🧠**
+- **Smart Duration Match**
   Automatically matches lyrics based on the duration of the currently playing song version (solving the Radio Edit vs. Album Version mismatch).
   
-- **Glassmorphism UI 🪟**
+- **Glassmorphism UI**
   Elegant, transparent, and borderless design.
   
-- **Freely Draggable 🖱️**
+- **Freely Draggable**
   Left-click and hold anywhere to drag the lyrics window wherever you like.
 
-## 🎛️ Invisible Controls
+## Invisible Controls
 
 This application uses zero conventional buttons to keep the UI perfectly clean. Use these mouse gestures:
 
 - `Right Click`: Play / Pause
 - `Mouse Scroll (Up/Down)`: Next / Previous track
 - `Middle Click (Scroll Wheel)`: Toggle Pin / Lock Window
-  - *When locked, the resize icon changes to a green padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Middle click again to unlock.*
+  - *When locked, the resize icon changes to a padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Middle click again to unlock.*
 - `Ctrl + Mouse Scroll`: Increase / Decrease font size
 - `Drag Bottom Right Corner (⇲)`: Resize the window
 - `Double Left Click`: Close the application
 
-## 🚀 Installation
+## Installation
 
-Run this single command in your Windows Terminal or Command Prompt (Requires **Python 3.8+** & Git):
+Run this single command in your Windows Terminal or Command Prompt (Requires **Python 3.8 to 3.12** & Git):
+
+> **Note on Python Version:** Do NOT use Python 3.13. The required `winsdk` package does not yet have pre-compiled binaries for Python 3.13 and will fail to install. Please stick to Python 3.12 or older.
 
 ```bash
 pip install git+https://github.com/paturrr/SpoLyrics.git
@@ -60,10 +62,10 @@ pip install git+https://github.com/paturrr/SpoLyrics.git
 python -m pip install git+https://github.com/paturrr/SpoLyrics.git
 ```
 
-> **⚠️ IMPORTANT (OS Support):** 
+> **IMPORTANT (OS Support):** 
 > This app is **Exclusive to Windows**. Because it uses `winsdk` (Windows System Media Transport Controls) to achieve 0-delay performance without third-party servers, it **CANNOT** be installed on macOS or Linux.
 
-## 🎮 Usage
+## Usage
 
 Once installed, you can launch the app from any directory by typing:
 ```bash
@@ -76,7 +78,7 @@ pythonw -m main
 
 *(Make sure Spotify or your Windows media player is running and playing a song!)*
 
-## 🗑️ Uninstallation
+## Uninstallation
 
 If you wish to remove this application from your computer, simply run:
 ```bash
