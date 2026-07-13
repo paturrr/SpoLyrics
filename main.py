@@ -159,10 +159,14 @@ class MiniLyrics:
                             break
                 
                 if not best_match:
+                    t_low, a_low = title.lower(), artist.lower()
                     for track in res:
                         if track.get('syncedLyrics'):
-                            best_match = track
-                            break
+                            tr_name = track.get('trackName', '').lower()
+                            ar_name = track.get('artistName', '').lower()
+                            if tr_name and ar_name and (t_low in tr_name or tr_name in t_low) and (a_low in ar_name or ar_name in a_low):
+                                best_match = track
+                                break
                             
                 if best_match:
                     parsed = []
