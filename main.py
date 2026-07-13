@@ -242,12 +242,25 @@ class MiniLyrics:
 
 def create_shortcut():
     try:
-        import shutil, subprocess
+        import shutil, subprocess, os
         shortcut_path = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "SpoLyrics.lnk")
+        
+        app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
+        icon_path = os.path.join(app_dir, 'icon.ico')
+        
+        needs_update = False
+        if not os.path.exists(icon_path):
+            os.makedirs(app_dir, exist_ok=True)
+            import urllib.request
+            urllib.request.urlretrieve("https://raw.githubusercontent.com/paturrr/SpoLyrics/main/icon.ico", icon_path)
+            needs_update = True
+            
         if not os.path.exists(shortcut_path):
+            needs_update = True
+            
+        if needs_update:
             exe_path = shutil.which('spolyrics')
             if exe_path:
-                icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
                 ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
     except:
