@@ -9,7 +9,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics?style=flat-square&color=1DB954&label=stars" alt="Stars">
+  <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics.svg?style=flat-square&color=1DB954&label=stars" alt="Stars">
+  <img src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-1DB954?style=flat-square&logo=python&logoColor=white" alt="Python Versions">
   <img src="https://img.shields.io/badge/os-Windows%2010%2F11-1DB954?style=flat-square" alt="Windows Only">
   <img src="https://img.shields.io/badge/license-MIT-1DB954?style=flat-square" alt="MIT license">
 </p>
