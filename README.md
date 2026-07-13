@@ -1,0 +1,80 @@
+<p align="center">
+  <img src="icon.ico" width="150" alt="SpoLyrics Logo">
+</p>
+
+<h1 align="center">SpoLyrics 🎵</h1>
+
+<p align="center">
+  <em>A minimalist, transparent, and zero-delay Spotify lyrics miniplayer.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics?style=flat-square&color=1DB954&label=stars" alt="Stars">
+  <img src="https://img.shields.io/github/v/release/paturrr/SpoLyrics?style=flat-square&color=1DB954&label=release" alt="Release">
+  <img src="https://img.shields.io/badge/os-Windows%2010%2F11-1DB954?style=flat-square" alt="Windows Only">
+  <img src="https://img.shields.io/badge/license-MIT-1DB954?style=flat-square" alt="MIT license">
+</p>
+
+<p align="center">
+  <strong>0-Delay Sync &middot; Native Windows API &middot; Glassmorphism UI &middot; Invisible Controls</strong><br>
+  <sub>Built with Python & Windows System Media Transport Controls for 100% precision.</sub>
+</p>
+
+---
+
+## ✨ Key Features
+
+- **Zero-Delay Sync ⚡**
+  100% precise time synchronization. Pulls real-time duration data directly from the Windows OS core.
+  
+- **Smart Duration Match 🧠**
+  Automatically matches lyrics based on the duration of the currently playing song version (solving the Radio Edit vs. Album Version mismatch).
+  
+- **Glassmorphism UI 🪟**
+  Elegant, transparent, and borderless design.
+  
+- **Freely Draggable 🖱️**
+  Left-click and hold anywhere to drag the lyrics window wherever you like.
+
+## 🎛️ Invisible Controls
+
+This application uses zero conventional buttons to keep the UI perfectly clean. Use these mouse gestures:
+
+- `Right Click`: Play / Pause
+- `Mouse Scroll (Up/Down)`: Next / Previous track
+- `Middle Click (Scroll Wheel)`: Toggle Pin / Lock Window
+  - *When locked, the resize icon changes to a green padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Middle click again to unlock.*
+- `Ctrl + Mouse Scroll`: Increase / Decrease font size
+- `Drag Bottom Right Corner (⇲)`: Resize the window
+- `Double Left Click`: Close the application
+
+## 🚀 Installation
+
+Run this single command in your Windows Terminal or Command Prompt (Requires **Python 3.8+** & Git):
+
+```bash
+pip install git+https://github.com/paturrr/SpoLyrics.git
+```
+
+> **⚠️ IMPORTANT (OS Support):** 
+> This app is **Exclusive to Windows**. Because it uses `winsdk` (Windows System Media Transport Controls) to achieve 0-delay performance without third-party servers, it **CANNOT** be installed on macOS or Linux.
+
+## 🎮 Usage
+
+Once installed, you can launch the app from any directory by typing:
+```bash
+spolyrics
+```
+Or, if you want it to run smoothly without spawning a black background terminal:
+```bash
+pythonw -m main
+```
+
+*(Make sure Spotify or your Windows media player is running and playing a song!)*
+
+## 🗑️ Uninstallation
+
+If you wish to remove this application from your computer, simply run:
+```bash
+pip uninstall spolyrics
+```
