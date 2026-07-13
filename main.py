@@ -36,7 +36,7 @@ class MiniLyrics:
         self.lbl_title = tk.Label(self.root, text="", fg='#a0a0a0', bg='#191414', font=('Arial', 8, 'bold'), justify='center', wraplength=320)
         self.lbl_title.place(relx=0.5, y=8, anchor='n')
         
-        self.lbl_current = tk.Label(self.root, text="Menunggu lagu...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
+        self.lbl_current = tk.Label(self.root, text="Waiting for song...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
         self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(25, 2))
         
         self.lbl_next = tk.Label(self.root, text="", fg='#b3b3b3', bg='#191414', font=('Arial', self.font_nxt), wraplength=330, justify="center")
@@ -214,7 +214,8 @@ class MiniLyrics:
                             
                             if song_id != self.current_song:
                                 self.current_song = song_id
-                                self.root.after(0, self.update_ui, f"Mencocokkan lirik pintar...\n{song_id}", "")
+                                self.lbl_title.config(text=song_id)
+                                self.root.after(0, self.update_ui, f"Matching smart lyrics...\n{song_id}", "")
                                 synced_lyrics = self.fetch_smart_lyrics(title, artist, duration)
                                 
                             if not synced_lyrics:
