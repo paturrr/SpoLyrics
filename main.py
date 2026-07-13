@@ -33,8 +33,8 @@ class MiniLyrics:
         self.is_pinned = False
         self.show_title = True
         
-        self.lbl_title = tk.Label(self.root, text="", fg='#888888', bg='#191414', font=('Arial', 8), anchor='nw', justify='left', wraplength=320)
-        self.lbl_title.place(x=15, y=8)
+        self.lbl_title = tk.Label(self.root, text="", fg='#a0a0a0', bg='#191414', font=('Arial', 8, 'bold'), justify='center', wraplength=320)
+        self.lbl_title.place(relx=0.5, y=8, anchor='n')
         
         self.lbl_current = tk.Label(self.root, text="Menunggu lagu...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
         self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(25, 2))
@@ -206,7 +206,7 @@ class MiniLyrics:
                         title, artist = info.title, info.artist
                         
                         if title and artist:
-                            song_id = f"{title} - {artist}"
+                            song_id = f"🎵 {title} • {artist}"
                             
                             if song_id != self.current_song:
                                 self.current_song = song_id
