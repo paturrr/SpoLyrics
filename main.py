@@ -8,11 +8,15 @@ import ctypes
 import json
 import shutil
 import subprocess
+import logging
 from datetime import datetime, timezone
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
+LOG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "error.log")
 STARTUP_SHORTCUT = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "Startup", "SpoLyrics.lnk")
+
+logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_config():
     default_config = {
@@ -26,7 +30,8 @@ def load_config():
             with open(CONFIG_PATH, 'r') as f:
                 loaded = json.load(f)
                 default_config.update(loaded)
-        except: pass
+        except Exception as e:
+            logging.error("Failed to load config", exc_info=e)
     return default_config
 
 def save_config(config):
@@ -46,7 +51,8 @@ def set_auto_start(enable):
         else:
             if os.path.exists(STARTUP_SHORTCUT):
                 os.remove(STARTUP_SHORTCUT)
-    except: pass
+    except Exception as e:
+        logging.error("Failed to set auto start", exc_info=e)
 
 class MiniLyrics:
     def __init__(self, config):
@@ -67,9 +73,10 @@ class MiniLyrics:
         try:
             hwnd = ctypes.windll.user32.GetParent(self.root.winfo_id())
             ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), ctypes.sizeof(ctypes.c_int))
-        except: pass
+        except Exception as e:
+            logging.error("Failed to set DWM rounded corners", exc_info=e)
         
-        self.font_cur = self.config['font_size']
+        self.font_cur = 11
         self.font_nxt = max(4, self.font_cur - 2)
         self.is_pinned = False
         self.show_title = True
@@ -109,7 +116,37 @@ class MiniLyrics:
             w.bind("<Button-2>", self.toggle_pin)
 
         self.current_song = ""
+        self.synced_lyrics = []
+        self.base_pos = 0.0
+        self.base_time = time.time()
+        self.is_playing = False
+        
+        self.render_lyrics()
         threading.Thread(target=self.poll_song, daemon=True).start()
+
+    def render_lyrics(self):
+        if self.synced_lyrics:
+            pos = self.base_pos
+            if self.is_playing:
+                pos += time.time() - self.base_time
+                
+            cur_text, next_text = "...", ""
+            for i, (lyric_time, txt) in enumerate(self.synced_lyrics):
+                if pos >= lyric_time:
+                    cur_text = txt
+                    if i + 1 < len(self.synced_lyrics):
+                        next_text = self.synced_lyrics[i+1][1]
+                else:
+                    break
+                    
+            if getattr(self, '_last_cur', None) != cur_text:
+                self.lbl_current.config(text=cur_text)
+                self._last_cur = cur_text
+            if getattr(self, '_last_nxt', None) != next_text:
+                self.lbl_next.config(text=next_text)
+                self._last_nxt = next_text
+                
+        self.root.after(50, self.render_lyrics)
 
     def click(self, event):
         self._offset_x = self.root.winfo_pointerx() - self.root.winfo_rootx()
@@ -158,8 +195,6 @@ class MiniLyrics:
             
         self.lbl_current.config(font=('Arial', self.font_cur, 'bold'))
         self.lbl_next.config(font=('Arial', self.font_nxt))
-        self.config['font_size'] = self.font_cur
-        save_config(self.config)
         return "break"
 
     def on_scroll(self, event):
@@ -186,7 +221,7 @@ class MiniLyrics:
             
         self.info_win = tk.Toplevel(self.root)
         self.info_win.title("SpoLyrics Info")
-        self.info_win.geometry("340x330")
+        self.info_win.geometry("340x400")
         self.info_win.configure(bg='#191414')
         self.info_win.attributes('-topmost', True)
         self.info_win.overrideredirect(True)
@@ -253,7 +288,7 @@ class MiniLyrics:
             
         self.settings_win = tk.Toplevel(self.root)
         self.settings_win.title("SpoLyrics Settings")
-        self.settings_win.geometry("340x310")
+        self.settings_win.geometry("380x350")
         self.settings_win.configure(bg='#191414')
         self.settings_win.attributes('-topmost', True)
         self.settings_win.resizable(False, False)
@@ -267,10 +302,10 @@ class MiniLyrics:
             self.settings_win.destroy()
         self.settings_win.protocol("WM_DELETE_WINDOW", on_settings_close)
         
-        tk.Label(self.settings_win, text="⚙️ Settings", fg='white', bg='#191414', font=('Segoe UI', 16, 'bold')).pack(pady=(20, 15))
+        tk.Label(self.settings_win, text="SpoLyrics Settings", fg='white', bg='#191414', font=('Segoe UI', 16, 'bold')).pack(pady=(20, 15))
         
         info_lbl = tk.Label(self.settings_win, text="❔", fg='#888888', bg='#191414', font=('Segoe UI', 12), cursor='hand2')
-        info_lbl.place(x=300, y=20)
+        info_lbl.place(x=340, y=20)
         info_lbl.bind("<Button-1>", lambda e: self.open_info())
         info_lbl.bind("<Enter>", lambda e: info_lbl.config(fg='white'))
         info_lbl.bind("<Leave>", lambda e: info_lbl.config(fg='#888888'))
@@ -363,13 +398,13 @@ class MiniLyrics:
         
         def toggle_palette(e=None):
             if not self.palette_visible:
-                self.settings_win.geometry("340x460")
+                self.settings_win.geometry("380x480")
                 update_lit_canvas()
                 palette_frame.pack(fill='x', padx=30, after=color_frame)
                 hex_entry.delete(0, 'end')
                 hex_entry.insert(0, self.current_hex)
             else:
-                self.settings_win.geometry("340x310")
+                self.settings_win.geometry("380x350")
                 palette_frame.pack_forget()
             self.palette_visible = not self.palette_visible
             
@@ -386,17 +421,17 @@ class MiniLyrics:
         op_val_lbl = tk.Label(op_frame, text=f"{int(self.cur_op*100)}%", fg='white', bg='#191414', font=('Segoe UI', 10, 'bold'))
         op_val_lbl.pack(side='right')
         
-        op_canvas = tk.Canvas(self.settings_win, width=280, height=14, bg='#191414', highlightthickness=0, cursor='hand2')
+        op_canvas = tk.Canvas(self.settings_win, width=320, height=14, bg='#191414', highlightthickness=0, cursor='hand2')
         op_canvas.pack(pady=(5, 15))
         
-        op_canvas.create_rectangle(0, 5, 280, 9, fill='#333333', outline='#333333')
-        op_fill = op_canvas.create_rectangle(0, 5, int(self.cur_op*280), 9, fill='#1DB954', outline='#1DB954')
-        th_x = int(self.cur_op*280)
+        op_canvas.create_rectangle(0, 5, 320, 9, fill='#333333', outline='#333333')
+        op_fill = op_canvas.create_rectangle(0, 5, int(self.cur_op*320), 9, fill='#1DB954', outline='#1DB954')
+        th_x = int(self.cur_op*320)
         op_thumb = op_canvas.create_oval(th_x-6, 1, th_x+6, 13, fill='white', outline='white')
         
         def on_op_drag(e):
-            x = max(28, min(e.x, 280)) # min 10% opacity
-            self.cur_op = x / 280.0
+            x = max(32, min(e.x, 320)) # min 10% opacity
+            self.cur_op = x / 320.0
             op_canvas.coords(op_fill, 0, 5, x, 9)
             op_canvas.coords(op_thumb, x-6, 1, x+6, 13)
             op_val_lbl.config(text=f"{int(self.cur_op*100)}%")
@@ -478,8 +513,11 @@ class MiniLyrics:
                 if action == 'play_pause':
                     info = current.get_playback_info()
                     if info and getattr(info.playback_status, 'value', info.playback_status) == 4:
+                        self.is_playing = False
                         await current.try_pause_async()
                     else:
+                        self.is_playing = True
+                        self.base_time = time.time()
                         await current.try_play_async()
                 elif action == 'next':
                     await current.try_skip_next_async()
@@ -521,15 +559,16 @@ class MiniLyrics:
                             try:
                                 m, s = t_str.split(':')
                                 parsed.append((int(m) * 60 + float(s), txt))
-                            except: pass
+                            except Exception as e:
+                                pass # abaikan format timestamp yg rusak
                     return parsed
-        except: pass
+        except Exception as e:
+            logging.error("Failed to fetch smart lyrics", exc_info=e)
         return []
 
     def poll_song(self):
         async def main_loop():
             sessions = await MediaManager.request_async()
-            synced_lyrics = []
             
             while True:
                 try:
@@ -539,48 +578,47 @@ class MiniLyrics:
                         timeline = current.get_timeline_properties()
                         playback = current.get_playback_info()
                         
-                        pos = 0
-                        duration = 0
-                        if timeline:
-                            duration = timeline.end_time.total_seconds() if hasattr(timeline.end_time, 'total_seconds') else (int(timeline.end_time) / 10000000.0)
-                            pos = timeline.position.total_seconds() if hasattr(timeline.position, 'total_seconds') else (int(timeline.position) / 10000000.0)
-                            
-                            if playback and getattr(playback.playback_status, 'value', playback.playback_status) == 4:
-                                if hasattr(timeline, 'last_updated_time'):
-                                    diff = (datetime.now(timezone.utc) - timeline.last_updated_time).total_seconds()
-                                    pos += diff
-                                    
                         title, artist = info.title, info.artist
-                        
                         if title and artist:
                             song_id = f"🎵 {title} • {artist}"
                             
+                            if timeline:
+                                duration = timeline.end_time.total_seconds() if hasattr(timeline.end_time, 'total_seconds') else (int(timeline.end_time) / 10000000.0)
+                                pos = timeline.position.total_seconds() if hasattr(timeline.position, 'total_seconds') else (int(timeline.position) / 10000000.0)
+                                self.is_playing = (playback and getattr(playback.playback_status, 'value', playback.playback_status) == 4)
+                                
+                                if hasattr(timeline, 'last_updated_time'):
+                                    diff = (datetime.now(timezone.utc) - timeline.last_updated_time).total_seconds()
+                                    if self.is_playing:
+                                        pos += diff
+                                    
+                                self.base_pos = pos
+                                self.base_time = time.time()
+                            
                             if song_id != self.current_song:
                                 self.current_song = song_id
-                                self.lbl_title.config(text=song_id if self.show_title else "")
+                                self.root.after(0, lambda sid=song_id: self.lbl_title.config(text=sid if self.show_title else ""))
                                 self.root.after(0, self.update_ui, f"Matching smart lyrics...\n{song_id}", "")
-                                synced_lyrics = self.fetch_smart_lyrics(title, artist, duration)
                                 
-                            if not synced_lyrics:
-                                self.root.after(0, self.update_ui, f"🎵 {title}", "")
-                            else:
-                                cur_text, next_text = "...", ""
-                                for i, (lyric_time, txt) in enumerate(synced_lyrics):
-                                    if pos >= lyric_time:
-                                        cur_text = txt
-                                        if i + 1 < len(synced_lyrics):
-                                            next_text = synced_lyrics[i+1][1]
-                                    else:
-                                        break
-                                self.root.after(0, self.update_ui, cur_text, next_text)
+                                async def fetch_and_apply(sid, t, a, d):
+                                    loop = asyncio.get_event_loop()
+                                    lyrics = await loop.run_in_executor(None, self.fetch_smart_lyrics, t, a, d)
+                                    if self.current_song == sid:
+                                        self.synced_lyrics = lyrics
+                                        if not lyrics:
+                                            self.root.after(0, self.update_ui, f"🎵 {t}", "")
+                                            
+                                asyncio.create_task(fetch_and_apply(song_id, title, artist, duration))
                     else:
-                        self.current_song = ""
-                        self.root.after(0, self.update_ui, "Tidak ada lagu diputar.", "")
+                        if self.current_song:
+                            self.current_song = ""
+                            self.synced_lyrics = []
+                            self.root.after(0, self.update_ui, "Tidak ada lagu diputar.", "")
                         
-                except Exception:
-                    pass
+                except Exception as e:
+                    logging.error("Error in poll_song loop", exc_info=e)
                 
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(0.2)
                 
         asyncio.run(main_loop())
 
@@ -605,8 +643,8 @@ def create_shortcut():
             if exe_path:
                 ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
-    except:
-        pass
+    except Exception as e:
+        logging.error("Failed to create shortcut", exc_info=e)
 
 def setup_tray(app):
     try:
@@ -631,7 +669,8 @@ def setup_tray(app):
         
         try:
             image = Image.open(icon_path)
-        except:
+        except Exception as e:
+            logging.error("Failed to open tray icon image, using fallback", exc_info=e)
             image = Image.new('RGB', (64, 64), color = (29, 185, 84))
             
         menu = pystray.Menu(
@@ -644,9 +683,14 @@ def setup_tray(app):
         icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu)
         threading.Thread(target=icon.run, daemon=True).start()
     except Exception as e:
-        print("Tray icon not loaded:", e)
+        logging.error("Tray icon failed to load", exc_info=e)
 
 def start_app():
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except Exception as e:
+        logging.error("Failed to set DPI awareness", exc_info=e)
+        
     create_shortcut()
     config = load_config()
     set_auto_start(config['auto_start'])
