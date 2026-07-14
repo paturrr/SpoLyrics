@@ -14,9 +14,11 @@ from assets import ICON_B64
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
-LOG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "error.log")
+APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
+os.makedirs(APP_DIR, exist_ok=True)
+LOG_PATH = os.path.join(APP_DIR, "error.log")
 STARTUP_SHORTCUT = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "Startup", "SpoLyrics.lnk")
-ICON_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "icon.ico")
+ICON_PATH = os.path.join(APP_DIR, "icon.ico")
 
 logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
