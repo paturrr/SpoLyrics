@@ -5,7 +5,7 @@ setup(
     version='1.0.8',
     description='A minimalist, borderless, zero-delay synced lyrics miniplayer for Spotify on Windows.',
     author='SpoLyrics Team',
-    py_modules=['main'],
+    py_modules=['main', 'assets'],
     python_requires='>=3.8',
     install_requires=[
         'winsdk',
