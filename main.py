@@ -15,6 +15,7 @@ from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessi
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 LOG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "error.log")
 STARTUP_SHORTCUT = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "Startup", "SpoLyrics.lnk")
+ICON_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "icon.ico")
 
 logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -62,9 +63,8 @@ class MiniLyrics:
         self.root.attributes('-topmost', True) 
         self.root.attributes('-alpha', self.config.get('opacity', 0.85)) 
         
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
-        if os.path.exists(icon_path):
-            self.root.iconbitmap(icon_path)
+        if os.path.exists(ICON_PATH):
+            self.root.iconbitmap(ICON_PATH)
             
         self.root.geometry("350x120+100+100")
         self.root.configure(bg='#191414') 
@@ -293,9 +293,8 @@ class MiniLyrics:
         self.settings_win.attributes('-topmost', True)
         self.settings_win.resizable(False, False)
         
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
-        if os.path.exists(icon_path):
-            self.settings_win.iconbitmap(icon_path)
+        if os.path.exists(ICON_PATH):
+            self.settings_win.iconbitmap(ICON_PATH)
             
         def on_settings_close():
             self.root.attributes('-alpha', self.config.get('opacity', 0.85))
