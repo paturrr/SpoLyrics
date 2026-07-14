@@ -5,15 +5,56 @@ import threading
 import asyncio
 import os
 import ctypes
+import json
+import shutil
+import subprocess
 from datetime import datetime, timezone
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
+CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
+STARTUP_SHORTCUT = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "Startup", "SpoLyrics.lnk")
+
+def load_config():
+    default_config = {
+        'color': '#1DB954',
+        'auto_start': False,
+        'font_size': 11,
+        'opacity': 0.85
+    }
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, 'r') as f:
+                loaded = json.load(f)
+                default_config.update(loaded)
+        except: pass
+    return default_config
+
+def save_config(config):
+    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+    with open(CONFIG_PATH, 'w') as f:
+        json.dump(config, f)
+
+def set_auto_start(enable):
+    try:
+        if enable:
+            app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
+            icon_path = os.path.join(app_dir, 'icon.ico')
+            exe_path = shutil.which('spolyrics')
+            if exe_path and os.path.exists(icon_path):
+                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
+                subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
+        else:
+            if os.path.exists(STARTUP_SHORTCUT):
+                os.remove(STARTUP_SHORTCUT)
+    except: pass
+
 class MiniLyrics:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.root = tk.Tk()
         self.root.overrideredirect(True) 
         self.root.attributes('-topmost', True) 
-        self.root.attributes('-alpha', 0.85) 
+        self.root.attributes('-alpha', self.config.get('opacity', 0.85)) 
         
         icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
         if os.path.exists(icon_path):
@@ -28,15 +69,15 @@ class MiniLyrics:
             ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, 33, ctypes.byref(ctypes.c_int(2)), ctypes.sizeof(ctypes.c_int))
         except: pass
         
-        self.font_cur = 11
-        self.font_nxt = 9
+        self.font_cur = self.config['font_size']
+        self.font_nxt = max(4, self.font_cur - 2)
         self.is_pinned = False
         self.show_title = True
         
         self.lbl_title = tk.Label(self.root, text="", fg='#a0a0a0', bg='#191414', font=('Arial', 8, 'bold'), justify='center', wraplength=320)
         self.lbl_title.place(relx=0.5, y=8, anchor='n')
         
-        self.lbl_current = tk.Label(self.root, text="Waiting for song...", fg='#1DB954', bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
+        self.lbl_current = tk.Label(self.root, text="Waiting for song...", fg=self.config['color'], bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
         self.lbl_current.pack(expand=True, fill='both', padx=10, pady=(25, 2))
         
         self.lbl_next = tk.Label(self.root, text="", fg='#b3b3b3', bg='#191414', font=('Arial', self.font_nxt), wraplength=330, justify="center")
@@ -71,7 +112,8 @@ class MiniLyrics:
         threading.Thread(target=self.poll_song, daemon=True).start()
 
     def click(self, event):
-        self.x, self.y = event.x, event.y
+        self._offset_x = self.root.winfo_pointerx() - self.root.winfo_rootx()
+        self._offset_y = self.root.winfo_pointery() - self.root.winfo_rooty()
         return "break"
 
     def toggle_title(self, event):
@@ -83,14 +125,16 @@ class MiniLyrics:
     def toggle_pin(self, event):
         self.is_pinned = not self.is_pinned
         if self.is_pinned:
-            self.grip.config(text="🔒", fg='#1DB954', cursor="arrow")
+            self.grip.config(text="🔒", fg=self.config['color'], cursor="arrow")
         else:
             self.grip.config(text="⇲", fg='#333333', cursor="size_nw_se")
         return "break"
 
     def drag(self, event):
         if self.is_pinned or event.widget == self.grip: return "break"
-        self.root.geometry(f"+{self.root.winfo_pointerx() - self.x}+{self.root.winfo_pointery() - self.y}")
+        x = self.root.winfo_pointerx() - self._offset_x
+        y = self.root.winfo_pointery() - self._offset_y
+        self.root.geometry(f"+{x}+{y}")
         return "break"
 
     def on_resize(self, event):
@@ -114,6 +158,8 @@ class MiniLyrics:
             
         self.lbl_current.config(font=('Arial', self.font_cur, 'bold'))
         self.lbl_next.config(font=('Arial', self.font_nxt))
+        self.config['font_size'] = self.font_cur
+        save_config(self.config)
         return "break"
 
     def on_scroll(self, event):
@@ -126,6 +172,302 @@ class MiniLyrics:
         self.lbl_current.config(text=cur)
         self.lbl_next.config(text=nxt)
         self.lbl_title.config(text=self.current_song if self.show_title else "")
+
+    def toggle_visibility(self):
+        if self.root.winfo_viewable():
+            self.root.withdraw()
+        else:
+            self.root.deiconify()
+
+    def open_info(self):
+        if hasattr(self, 'info_win') and self.info_win.winfo_exists():
+            self.info_win.focus()
+            return
+            
+        self.info_win = tk.Toplevel(self.root)
+        self.info_win.title("SpoLyrics Info")
+        self.info_win.geometry("340x330")
+        self.info_win.configure(bg='#191414')
+        self.info_win.attributes('-topmost', True)
+        self.info_win.overrideredirect(True)
+        self.info_win.attributes('-alpha', 1.0)
+        
+        def start_drag(e):
+            self.info_win._offset_x = self.info_win.winfo_pointerx() - self.info_win.winfo_rootx()
+            self.info_win._offset_y = self.info_win.winfo_pointery() - self.info_win.winfo_rooty()
+
+        def do_drag(e):
+            x = self.info_win.winfo_pointerx() - self.info_win._offset_x
+            y = self.info_win.winfo_pointery() - self.info_win._offset_y
+            self.info_win.geometry(f"+{x}+{y}")
+            
+        self.info_win.bind("<Button-1>", start_drag)
+        self.info_win.bind("<B1-Motion>", do_drag)
+        
+        lbl_title = tk.Label(self.info_win, text="📚 SpoLyrics Shortcuts", fg='#1DB954', bg='#191414', font=('Segoe UI', 14, 'bold'))
+        lbl_title.pack(pady=(20, 15))
+        lbl_title.bind("<Button-1>", start_drag)
+        lbl_title.bind("<B1-Motion>", do_drag)
+        
+        shortcuts = [
+            ("🖱️ Left Click (Hold)", "Move Window"),
+            ("🖱️ Right Click", "Play / Pause"),
+            ("🖱️ Middle Mouse Click", "Pin / Unpin Window (🔒)"),
+            ("🖱️ Middle Mouse Scroll", "Next / Previous Track"),
+            ("🖱️ Double Left Click", "Quit Application"),
+            ("⌨️ Ctrl + Left Click", "Show / Hide Title"),
+            ("⌨️ Ctrl + Scroll", "Resize Text")
+        ]
+        
+        for k, v in shortcuts:
+            frame = tk.Frame(self.info_win, bg='#191414')
+            frame.pack(fill='x', padx=30, pady=5)
+            frame.bind("<Button-1>", start_drag)
+            frame.bind("<B1-Motion>", do_drag)
+            
+            lbl_k = tk.Label(frame, text=k, fg='white', bg='#191414', font=('Segoe UI', 9, 'bold'))
+            lbl_k.pack(side='left')
+            lbl_k.bind("<Button-1>", start_drag)
+            lbl_k.bind("<B1-Motion>", do_drag)
+            
+            lbl_v = tk.Label(frame, text=v, fg='#a0a0a0', bg='#191414', font=('Segoe UI', 9))
+            lbl_v.pack(side='right')
+            lbl_v.bind("<Button-1>", start_drag)
+            lbl_v.bind("<B1-Motion>", do_drag)
+            
+        close_btn = tk.Label(self.info_win, text="Close", bg='#333333', fg='white', font=('Segoe UI', 10, 'bold'), pady=6, cursor='hand2')
+        close_btn.pack(fill='x', padx=40, pady=(20, 10))
+        close_btn.bind("<Button-1>", lambda e: self.info_win.destroy())
+        
+        close_btn.bind("<Enter>", lambda e: close_btn.config(bg='#444444'))
+        close_btn.bind("<Leave>", lambda e: close_btn.config(bg='#333333'))
+        
+        x = self.root.winfo_rootx()
+        y = self.root.winfo_rooty() + 80
+        self.info_win.geometry(f"+{x}+{y}")
+
+    def open_settings(self):
+        if hasattr(self, 'settings_win') and self.settings_win.winfo_exists():
+            self.settings_win.focus()
+            return
+            
+        self.settings_win = tk.Toplevel(self.root)
+        self.settings_win.title("SpoLyrics Settings")
+        self.settings_win.geometry("340x310")
+        self.settings_win.configure(bg='#191414')
+        self.settings_win.attributes('-topmost', True)
+        self.settings_win.resizable(False, False)
+        
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icon.ico')
+        if os.path.exists(icon_path):
+            self.settings_win.iconbitmap(icon_path)
+            
+        def on_settings_close():
+            self.root.attributes('-alpha', self.config.get('opacity', 0.85))
+            self.settings_win.destroy()
+        self.settings_win.protocol("WM_DELETE_WINDOW", on_settings_close)
+        
+        tk.Label(self.settings_win, text="⚙️ Settings", fg='white', bg='#191414', font=('Segoe UI', 16, 'bold')).pack(pady=(20, 15))
+        
+        info_lbl = tk.Label(self.settings_win, text="❔", fg='#888888', bg='#191414', font=('Segoe UI', 12), cursor='hand2')
+        info_lbl.place(x=300, y=20)
+        info_lbl.bind("<Button-1>", lambda e: self.open_info())
+        info_lbl.bind("<Enter>", lambda e: info_lbl.config(fg='white'))
+        info_lbl.bind("<Leave>", lambda e: info_lbl.config(fg='#888888'))
+        
+        # --- Color Picker ---
+        color_frame = tk.Frame(self.settings_win, bg='#191414')
+        color_frame.pack(fill='x', padx=30, pady=5)
+        
+        tk.Label(color_frame, text="Lyrics Color", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        
+        self.current_hex = self.config['color']
+        
+        color_btn = tk.Frame(color_frame, bg=self.current_hex, width=50, height=25, cursor='hand2', highlightbackground='#333333', highlightthickness=1)
+        color_btn.pack(side='right')
+        
+        # --- Ultra Modern Inline Sliders ---
+        palette_frame = tk.Frame(self.settings_win, bg='#191414')
+        self.palette_visible = False
+        
+        import colorsys
+        def hls_to_hex(h, l, s=1.0):
+            rgb = colorsys.hls_to_rgb(h, l, s)
+            return "#{:02x}{:02x}{:02x}".format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
+            
+        tk.Label(palette_frame, text="Hue (Warna):", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(anchor='w', padx=5)
+        hue_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#191414', highlightthickness=0, cursor='hand2')
+        hue_canvas.pack(pady=(0, 5))
+        
+        for i in range(120):
+            c = hls_to_hex(i/120.0, 0.5)
+            hue_canvas.create_rectangle(i*2, 0, (i+1)*2, 12, fill=c, outline=c)
+        hue_thumb = hue_canvas.create_rectangle(0, 0, 4, 12, fill='white', outline='black')
+        
+        tk.Label(palette_frame, text="Lightness (Kecerahan):", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(anchor='w', padx=5)
+        lit_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#191414', highlightthickness=0, cursor='hand2')
+        lit_canvas.pack(pady=(0, 5))
+        
+        lit_rects = []
+        for i in range(120):
+            r = lit_canvas.create_rectangle(i*2, 0, (i+1)*2, 12, fill='#fff', outline='#fff')
+            lit_rects.append(r)
+        lit_thumb = lit_canvas.create_rectangle(120, 0, 124, 12, fill='black', outline='white')
+        
+        custom_frame = tk.Frame(palette_frame, bg='#191414')
+        custom_frame.pack(pady=(5,0))
+        tk.Label(custom_frame, text="Hex:", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(side='left')
+        hex_entry = tk.Entry(custom_frame, width=9, bg='#282828', fg='white', insertbackground='white', relief='flat', justify='center')
+        hex_entry.insert(0, self.current_hex)
+        hex_entry.pack(side='left', padx=5)
+        
+        self.cur_h = 0.33
+        self.cur_l = 0.5
+        
+        def update_lit_canvas():
+            for i in range(120):
+                c = hls_to_hex(self.cur_h, i/120.0)
+                lit_canvas.itemconfig(lit_rects[i], fill=c, outline=c)
+                
+        def set_color_from_picker():
+            c = hls_to_hex(self.cur_h, self.cur_l)
+            self.current_hex = c
+            color_btn.config(bg=c)
+            hex_entry.delete(0, 'end')
+            hex_entry.insert(0, c)
+            
+        def on_hue_drag(e):
+            x = max(0, min(e.x, 240))
+            self.cur_h = x / 240.0
+            hue_canvas.coords(hue_thumb, x-2, 0, x+2, 12)
+            update_lit_canvas()
+            set_color_from_picker()
+            
+        def on_lit_drag(e):
+            x = max(0, min(e.x, 240))
+            self.cur_l = x / 240.0
+            lit_canvas.coords(lit_thumb, x-2, 0, x+2, 12)
+            set_color_from_picker()
+            
+        hue_canvas.bind("<B1-Motion>", on_hue_drag)
+        hue_canvas.bind("<Button-1>", on_hue_drag)
+        lit_canvas.bind("<B1-Motion>", on_lit_drag)
+        lit_canvas.bind("<Button-1>", on_lit_drag)
+        
+        def apply_hex(e):
+            v = hex_entry.get().strip()
+            if v.startswith('#') and len(v) in [4, 7]:
+                self.current_hex = v
+                color_btn.config(bg=v)
+        hex_entry.bind("<Return>", apply_hex)
+        
+        def toggle_palette(e=None):
+            if not self.palette_visible:
+                self.settings_win.geometry("340x460")
+                update_lit_canvas()
+                palette_frame.pack(fill='x', padx=30, after=color_frame)
+                hex_entry.delete(0, 'end')
+                hex_entry.insert(0, self.current_hex)
+            else:
+                self.settings_win.geometry("340x310")
+                palette_frame.pack_forget()
+            self.palette_visible = not self.palette_visible
+            
+        color_btn.bind("<Button-1>", toggle_palette)
+        
+        # --- Opacity Slider ---
+        op_frame = tk.Frame(self.settings_win, bg='#191414')
+        op_frame.pack(fill='x', padx=30, pady=(15, 0))
+        
+        tk.Label(op_frame, text="Window Opacity", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        tk.Label(op_frame, text="(Normal: 85%)", fg='#666666', bg='#191414', font=('Segoe UI', 9)).pack(side='left', padx=5, pady=(2,0))
+        
+        self.cur_op = self.config.get('opacity', 0.85)
+        op_val_lbl = tk.Label(op_frame, text=f"{int(self.cur_op*100)}%", fg='white', bg='#191414', font=('Segoe UI', 10, 'bold'))
+        op_val_lbl.pack(side='right')
+        
+        op_canvas = tk.Canvas(self.settings_win, width=280, height=14, bg='#191414', highlightthickness=0, cursor='hand2')
+        op_canvas.pack(pady=(5, 15))
+        
+        op_canvas.create_rectangle(0, 5, 280, 9, fill='#333333', outline='#333333')
+        op_fill = op_canvas.create_rectangle(0, 5, int(self.cur_op*280), 9, fill='#1DB954', outline='#1DB954')
+        th_x = int(self.cur_op*280)
+        op_thumb = op_canvas.create_oval(th_x-6, 1, th_x+6, 13, fill='white', outline='white')
+        
+        def on_op_drag(e):
+            x = max(28, min(e.x, 280)) # min 10% opacity
+            self.cur_op = x / 280.0
+            op_canvas.coords(op_fill, 0, 5, x, 9)
+            op_canvas.coords(op_thumb, x-6, 1, x+6, 13)
+            op_val_lbl.config(text=f"{int(self.cur_op*100)}%")
+            self.root.attributes('-alpha', self.cur_op)
+            
+        op_canvas.bind("<B1-Motion>", on_op_drag)
+        op_canvas.bind("<Button-1>", on_op_drag)
+        
+        # --- Auto Start Toggle ---
+        toggle_frame = tk.Frame(self.settings_win, bg='#191414')
+        toggle_frame.pack(fill='x', padx=30, pady=5)
+        
+        tk.Label(toggle_frame, text="Auto-start Windows", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        
+        class ToggleSwitch(tk.Canvas):
+            def __init__(self, parent, initial_state=False, *args, **kwargs):
+                tk.Canvas.__init__(self, parent, width=46, height=24, bg='#191414', highlightthickness=0, cursor='hand2', *args, **kwargs)
+                self.is_on = initial_state
+                self.track = self.create_oval(2, 2, 22, 22, fill="#555", outline="#555")
+                self.track2 = self.create_oval(24, 2, 44, 22, fill="#555", outline="#555")
+                self.rect = self.create_rectangle(12, 2, 34, 22, fill="#555", outline="#555")
+                self.thumb = self.create_oval(4, 4, 20, 20, fill="white", outline="white")
+                self.bind("<Button-1>", self.toggle)
+                self._update_ui()
+                
+            def toggle(self, event):
+                self.is_on = not self.is_on
+                self._update_ui()
+                
+            def _update_ui(self):
+                if self.is_on:
+                    self.itemconfig(self.track, fill="#1DB954", outline="#1DB954")
+                    self.itemconfig(self.track2, fill="#1DB954", outline="#1DB954")
+                    self.itemconfig(self.rect, fill="#1DB954", outline="#1DB954")
+                    self.coords(self.thumb, 26, 4, 42, 20)
+                else:
+                    self.itemconfig(self.track, fill="#555555", outline="#555555")
+                    self.itemconfig(self.track2, fill="#555555", outline="#555555")
+                    self.itemconfig(self.rect, fill="#555555", outline="#555555")
+                    self.coords(self.thumb, 4, 4, 20, 20)
+
+        toggle = ToggleSwitch(toggle_frame, initial_state=self.config['auto_start'])
+        toggle.pack(side='right')
+
+        # --- Separator ---
+        tk.Frame(self.settings_win, height=1, bg='#282828').pack(fill='x', padx=30, pady=10)
+        
+        # --- Save Button ---
+        def save_and_apply(e=None):
+            self.config['color'] = self.current_hex
+            self.config['auto_start'] = toggle.is_on
+            self.config['opacity'] = self.cur_op
+            save_config(self.config)
+            self.lbl_current.config(fg=self.config['color'])
+            set_auto_start(self.config['auto_start'])
+            if self.is_pinned:
+                self.grip.config(fg=self.config['color'])
+            
+            save_btn.config(bg='#15893e')
+            self.settings_win.protocol("WM_DELETE_WINDOW", lambda: None)
+            self.root.after(100, lambda: self.settings_win.destroy())
+            
+        def on_enter(e): save_btn.config(bg='#1ed760')
+        def on_leave(e): save_btn.config(bg='#1DB954')
+
+        save_btn = tk.Label(self.settings_win, text="Save & Apply", bg='#1DB954', fg='white', font=('Segoe UI', 11, 'bold'), pady=8, cursor='hand2')
+        save_btn.pack(fill='x', padx=40, pady=(0, 20))
+        
+        save_btn.bind("<Button-1>", save_and_apply)
+        save_btn.bind("<Enter>", on_enter)
+        save_btn.bind("<Leave>", on_leave)
 
     def media_control(self, action):
         if self.is_pinned: return "break"
@@ -148,7 +490,8 @@ class MiniLyrics:
 
     def fetch_smart_lyrics(self, title, artist, actual_duration):
         try:
-            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}).json()
+            # Menggunakan User-Agent agar tidak diblokir API
+            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=5).json()
             if res and isinstance(res, list) and len(res) > 0:
                 best_match = None
                 
@@ -214,7 +557,7 @@ class MiniLyrics:
                             
                             if song_id != self.current_song:
                                 self.current_song = song_id
-                                self.lbl_title.config(text=song_id)
+                                self.lbl_title.config(text=song_id if self.show_title else "")
                                 self.root.after(0, self.update_ui, f"Matching smart lyrics...\n{song_id}", "")
                                 synced_lyrics = self.fetch_smart_lyrics(title, artist, duration)
                                 
@@ -243,9 +586,7 @@ class MiniLyrics:
 
 def create_shortcut():
     try:
-        import shutil, subprocess, os
         shortcut_path = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "SpoLyrics.lnk")
-        
         app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
         icon_path = os.path.join(app_dir, 'icon.ico')
         
@@ -267,9 +608,51 @@ def create_shortcut():
     except:
         pass
 
+def setup_tray(app):
+    try:
+        import pystray
+        from PIL import Image
+        
+        def on_quit(icon, item):
+            icon.stop()
+            app.root.quit()
+            
+        def on_settings(icon, item):
+            app.root.after(0, app.open_settings)
+            
+        def on_toggle_lyrics(icon, item):
+            app.root.after(0, app.toggle_visibility)
+            
+        def on_info(icon, item):
+            app.root.after(0, app.open_info)
+    
+        app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
+        icon_path = os.path.join(app_dir, 'icon.ico')
+        
+        try:
+            image = Image.open(icon_path)
+        except:
+            image = Image.new('RGB', (64, 64), color = (29, 185, 84))
+            
+        menu = pystray.Menu(
+            pystray.MenuItem("Shortcuts & Info", on_info),
+            pystray.MenuItem("Settings", on_settings),
+            pystray.MenuItem("Toggle Visibility", on_toggle_lyrics),
+            pystray.MenuItem("Quit", on_quit)
+        )
+        
+        icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu)
+        threading.Thread(target=icon.run, daemon=True).start()
+    except Exception as e:
+        print("Tray icon not loaded:", e)
+
 def start_app():
     create_shortcut()
-    app = MiniLyrics()
+    config = load_config()
+    set_auto_start(config['auto_start'])
+    
+    app = MiniLyrics(config)
+    setup_tray(app)
     app.root.mainloop()
 
 if __name__ == '__main__':

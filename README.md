@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics.svg?style=flat-square&color=1DB954&label=stars" alt="Stars">
+  <img src="https://img.shields.io/github/stars/paturrr/SpoLyrics.svg?style=flat-square&color=1DB954&label=stars&logo=github&logoColor=white" alt="Stars">
   <img src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-1DB954?style=flat-square&logo=python&logoColor=white" alt="Python Versions">
-  <img src="https://img.shields.io/badge/os-Windows%2010%2F11-1DB954?style=flat-square" alt="Windows Only">
-  <img src="https://img.shields.io/badge/license-MIT-1DB954?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/OS-Windows%2010%2F11-1DB954?style=flat-square&logo=windows&logoColor=white" alt="Windows Only">
+  <img src="https://img.shields.io/badge/%F0%9F%93%9C_License-MIT-1DB954?style=flat-square" alt="MIT license">
 </p>
 
 <p align="center">
@@ -21,9 +21,9 @@
 </p>
 
 <p align="center">
-  <img src="assets/hasil1.png" alt="SpoLyrics in action">
-  &nbsp;
-  <img src="assets/hasil2.png" alt="SpoLyrics transparent UI">
+  <img src="assets/1.png" alt="SpoLyrics Transparent UI & Lyrics Sync">
+  <br><br>
+  <img src="assets/2.png" alt="SpoLyrics Modern Settings & Shortcuts">
 </p>
 
 ---
@@ -49,6 +49,12 @@ I built this project to solve a specific complaint from my friends: they wanted 
   
 - **Freely Draggable**
   Left-click and hold anywhere to drag the lyrics window wherever you like.
+  
+- **System Tray Integration**
+  Runs quietly in the background. Right-click the system tray icon (SpoLyrics logo) to access settings, hide the lyrics, or view shortcuts.
+  
+- **Advanced Customization (Settings)**
+  Change lyrics color using a modern real-time custom HSV color picker, adjust window transparency (opacity), and enable "Auto-Start with Windows". All configurations are permanently saved.
 
 ## Invisible Controls
 
@@ -80,6 +86,14 @@ python -m pip install git+https://github.com/paturrr/SpoLyrics.git
 > **IMPORTANT (OS Support):** 
 > This app is **Exclusive to Windows**. Because it uses `winsdk` (Windows System Media Transport Controls) to achieve 0-delay performance without third-party servers, it **CANNOT** be installed on macOS or Linux.
 
+### Alternative Installation (Manual)
+
+If you prefer to download the source code manually (e.g., as a `.zip` file) instead of using the direct `git` command above, you must install the required dependencies (the "shopping list") yourself. 
+Open your terminal inside the `SpoLyrics` folder and run:
+```bash
+pip install -r requirements.txt
+```
+
 ## Usage
 
 Once installed, you can launch the app from any directory by typing:
@@ -106,3 +120,7 @@ If you wish to remove this application from your computer, simply run:
 ```bash
 pip uninstall spolyrics
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
