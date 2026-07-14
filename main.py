@@ -535,7 +535,7 @@ class MiniLyrics:
     def fetch_smart_lyrics(self, title, artist, actual_duration):
         try:
             # Menggunakan User-Agent agar tidak diblokir API
-            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=5).json()
+            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=15).json()
             if res and isinstance(res, list) and len(res) > 0:
                 best_match = None
                 t_low = title.lower()
