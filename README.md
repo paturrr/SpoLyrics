@@ -71,16 +71,16 @@ This application uses zero conventional buttons to keep the UI perfectly clean. 
 
 ## Installation
 
-Run this single command in your Windows Terminal or Command Prompt (Requires **Python 3.8 to 3.12** & Git):
+Run this single command in your Windows Terminal or Command Prompt (Requires **Python 3.8 to 3.12**):
 
 > **Note on Python Version:** Do NOT use Python 3.13. The required `winsdk` package does not yet have pre-compiled binaries for Python 3.13 and will fail to install. Please stick to Python 3.12 or older.
 
 ```bash
-pip install git+https://github.com/paturrr/SpoLyrics.git
+pip install spolyrics
 ```
 *(If you get a `pip is not recognized` error, use this alternative command instead:)*
 ```bash
-python -m pip install git+https://github.com/paturrr/SpoLyrics.git
+python -m pip install spolyrics
 ```
 
 > **IMPORTANT (OS Support):** 
@@ -111,7 +111,7 @@ pythonw -m main
 
 To update the application to the latest version, run:
 ```bash
-pip install --upgrade git+https://github.com/paturrr/SpoLyrics.git
+pip install --upgrade spolyrics
 ```
 
 ## Uninstallation
