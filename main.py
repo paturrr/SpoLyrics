@@ -531,15 +531,31 @@ class MiniLyrics:
             res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=5).json()
             if res and isinstance(res, list) and len(res) > 0:
                 best_match = None
+                t_low = title.lower()
+                a_low = artist.lower()
                 
+                # --- TAHAP 1: Kumpulkan semua kandidat yang durasinya valid (Toleransi 3 detik) ---
+                duration_matches = []
                 for track in res:
                     if track.get('syncedLyrics') and track.get('duration'):
                         if abs(track['duration'] - actual_duration) <= 3:
+                            duration_matches.append(track)
+                
+                if duration_matches:
+                    # --- TAHAP 2: Prioritas Judul Spesifik (Slayer of False Positives) ---
+                    # Cari yang judulnya sangat identik (untuk mendeteksi "English Version", "Twin Ver", dll)
+                    for track in duration_matches:
+                        tr_name = track.get('trackName', '').lower()
+                        if tr_name == t_low or t_low in tr_name or tr_name in t_low:
                             best_match = track
                             break
+                    
+                    # Fallback Tahap 2: Jika judul tidak ada yang cocok persis, ambil kandidat durasi pertama
+                    if not best_match:
+                        best_match = duration_matches[0]
                 
+                # --- TAHAP 3: Fallback Ultimate (Jika durasi dari API atau Spotify ngaco/berbeda jauh) ---
                 if not best_match:
-                    t_low, a_low = title.lower(), artist.lower()
                     for track in res:
                         if track.get('syncedLyrics'):
                             tr_name = track.get('trackName', '').lower()
