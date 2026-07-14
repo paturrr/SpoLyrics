@@ -4,6 +4,8 @@ setup(
     name='spolyrics',
     version='1.0.8',
     description='A minimalist, borderless, zero-delay synced lyrics miniplayer for Spotify on Windows.',
+    long_description=open('README.md', 'r', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
     author='SpoLyrics Team',
     py_modules=['main', 'assets'],
     python_requires='>=3.8',
