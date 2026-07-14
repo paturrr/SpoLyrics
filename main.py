@@ -9,6 +9,7 @@ import json
 import shutil
 import subprocess
 import logging
+import sqlite3
 from datetime import datetime, timezone
 from assets import ICON_B64
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
@@ -21,6 +22,45 @@ STARTUP_SHORTCUT = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Win
 ICON_PATH = os.path.join(APP_DIR, "icon.ico")
 
 logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
+CACHE_DB_PATH = os.path.join(APP_DIR, "lyrics_cache.db")
+def init_db():
+    try:
+        conn = sqlite3.connect(CACHE_DB_PATH)
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS lyrics
+                     (artist TEXT, title TEXT, duration REAL, parsed_lyrics TEXT)''')
+        c.execute('''CREATE INDEX IF NOT EXISTS idx_song ON lyrics (artist, title)''')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logging.error("DB init error", exc_info=e)
+
+init_db()
+
+def get_cached_lyrics(title, artist, duration):
+    try:
+        conn = sqlite3.connect(CACHE_DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT parsed_lyrics FROM lyrics WHERE artist=? AND title=? AND abs(duration - ?) <= 3", (artist.lower(), title.lower(), duration))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            return json.loads(row[0])
+    except Exception as e:
+        logging.error("Cache read error", exc_info=e)
+    return None
+
+def save_cached_lyrics(title, artist, duration, parsed_lyrics):
+    try:
+        conn = sqlite3.connect(CACHE_DB_PATH)
+        c = conn.cursor()
+        c.execute("INSERT INTO lyrics (artist, title, duration, parsed_lyrics) VALUES (?, ?, ?, ?)", 
+                  (artist.lower(), title.lower(), duration, json.dumps(parsed_lyrics)))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logging.error("Cache write error", exc_info=e)
 
 def load_config():
     default_config = {
@@ -533,9 +573,13 @@ class MiniLyrics:
         return "break"
 
     def fetch_smart_lyrics(self, title, artist, actual_duration):
+        cached = get_cached_lyrics(title, artist, actual_duration)
+        if cached:
+            return cached
+
         try:
             # Menggunakan User-Agent agar tidak diblokir API
-            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=15).json()
+            res = requests.get('https://lrclib.net/api/search', params={'track_name': title, 'artist_name': artist}, headers={'User-Agent': 'SpoLyrics/2.0'}, timeout=8).json()
             if res and isinstance(res, list) and len(res) > 0:
                 best_match = None
                 t_low = title.lower()
@@ -583,6 +627,8 @@ class MiniLyrics:
                                 parsed.append((int(m) * 60 + float(s), txt))
                             except Exception as e:
                                 pass # abaikan format timestamp yg rusak
+                    if parsed:
+                        save_cached_lyrics(title, artist, actual_duration, parsed)
                     return parsed
         except Exception as e:
             logging.error("Failed to fetch smart lyrics", exc_info=e)
