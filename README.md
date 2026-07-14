@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="icon.ico" width="150" alt="SpoLyrics Logo">
+  <img src="https://raw.githubusercontent.com/paturrr/SpoLyrics/main/icon.ico" width="150" alt="SpoLyrics Logo">
 </p>
 
 <h1 align="center">SpoLyrics</h1>
@@ -21,9 +21,9 @@
 </p>
 
 <p align="center">
-  <img src="assets/1.png" alt="SpoLyrics Transparent UI & Lyrics Sync">
+  <img src="https://raw.githubusercontent.com/paturrr/SpoLyrics/main/assets/1.png" alt="SpoLyrics Transparent UI & Lyrics Sync">
   <br><br>
-  <img src="assets/2.png" alt="SpoLyrics Modern Settings & Shortcuts">
+  <img src="https://raw.githubusercontent.com/paturrr/SpoLyrics/main/assets/2.png" alt="SpoLyrics Modern Settings & Shortcuts">
 </p>
 
 ---
