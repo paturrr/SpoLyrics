@@ -94,7 +94,7 @@ def set_auto_start(enable):
             if getattr(sys, 'frozen', False):
                 exe_path = sys.executable
             else:
-                exe_path = shutil.which('spolyrics')
+                exe_path = shutil.which('spolyrics') or sys.executable
             if exe_path and os.path.exists(icon_path):
                 ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
@@ -717,7 +717,7 @@ def create_shortcut():
             if getattr(sys, 'frozen', False):
                 exe_path = sys.executable
             else:
-                exe_path = shutil.which('spolyrics')
+                exe_path = shutil.which('spolyrics') or sys.executable
             if exe_path:
                 ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
