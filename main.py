@@ -671,6 +671,9 @@ class MiniLyrics:
                                 self.root.after(0, self.update_ui, f"Matching smart lyrics...\n{song_id}", "")
                                 
                                 async def fetch_and_apply(sid, t, a, d):
+                                    await asyncio.sleep(0.5)
+                                    if self.current_song != sid:
+                                        return
                                     loop = asyncio.get_event_loop()
                                     lyrics = await loop.run_in_executor(None, self.fetch_smart_lyrics, t, a, d)
                                     if self.current_song == sid:
