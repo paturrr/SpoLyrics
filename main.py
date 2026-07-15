@@ -540,7 +540,7 @@ class MiniLyrics:
             
             save_btn.config(bg='#15893e')
             self.settings_win.protocol("WM_DELETE_WINDOW", lambda: None)
-            self.root.after(100, lambda: self.settings_win.destroy())
+            self.root.after(100, lambda: self.settings_win.destroy() if self.settings_win.winfo_exists() else None)
             
         def on_enter(e): save_btn.config(bg='#1ed760')
         def on_leave(e): save_btn.config(bg='#1DB954')
