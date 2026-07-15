@@ -24,6 +24,7 @@ ICON_PATH = os.path.join(APP_DIR, "icon.ico")
 logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 CACHE_DB_PATH = os.path.join(APP_DIR, "lyrics_cache.db")
+db_lock = threading.Lock()
 def init_db():
     try:
         conn = sqlite3.connect(CACHE_DB_PATH)
@@ -53,12 +54,13 @@ def get_cached_lyrics(title, artist, duration):
 
 def save_cached_lyrics(title, artist, duration, parsed_lyrics):
     try:
-        conn = sqlite3.connect(CACHE_DB_PATH)
-        c = conn.cursor()
-        c.execute("INSERT INTO lyrics (artist, title, duration, parsed_lyrics) VALUES (?, ?, ?, ?)", 
-                  (artist.lower(), title.lower(), duration, json.dumps(parsed_lyrics)))
-        conn.commit()
-        conn.close()
+        with db_lock:
+            conn = sqlite3.connect(CACHE_DB_PATH, timeout=5)
+            c = conn.cursor()
+            c.execute("INSERT INTO lyrics (artist, title, duration, parsed_lyrics) VALUES (?, ?, ?, ?)", 
+                      (artist.lower(), title.lower(), duration, json.dumps(parsed_lyrics)))
+            conn.commit()
+            conn.close()
     except Exception as e:
         logging.error("Cache write error", exc_info=e)
 
