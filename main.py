@@ -337,7 +337,7 @@ class MiniLyrics:
             
         self.settings_win = tk.Toplevel(self.root)
         self.settings_win.title("SpoLyrics Settings")
-        self.settings_win.geometry("380x350")
+        self.settings_win.geometry("380x410")
         self.settings_win.configure(bg='#191414')
         self.settings_win.attributes('-topmost', True)
         self.settings_win.resizable(False, False)
@@ -446,13 +446,13 @@ class MiniLyrics:
         
         def toggle_palette(e=None):
             if not self.palette_visible:
-                self.settings_win.geometry("380x480")
+                self.settings_win.geometry("380x540")
                 update_lit_canvas()
                 palette_frame.pack(fill='x', padx=30, after=color_frame)
                 hex_entry.delete(0, 'end')
                 hex_entry.insert(0, self.current_hex)
             else:
-                self.settings_win.geometry("380x350")
+                self.settings_win.geometry("380x410")
                 palette_frame.pack_forget()
             self.palette_visible = not self.palette_visible
             
@@ -523,6 +523,44 @@ class MiniLyrics:
 
         toggle = ToggleSwitch(toggle_frame, initial_state=self.config['auto_start'])
         toggle.pack(side='right')
+
+        # --- Cache Info ---
+        cache_frame = tk.Frame(self.settings_win, bg='#191414')
+        cache_frame.pack(fill='x', padx=30, pady=5)
+        
+        tk.Label(cache_frame, text="Lyrics Cache", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        
+        def get_db_size():
+            try:
+                if os.path.exists(CACHE_DB_PATH):
+                    size_bytes = os.path.getsize(CACHE_DB_PATH)
+                    if size_bytes >= 1024 * 1024:
+                        return f"{size_bytes / (1024 * 1024):.2f} MB"
+                    else:
+                        return f"{size_bytes / 1024:.2f} KB"
+            except Exception:
+                pass
+            return "0.00 KB"
+            
+        cache_size_lbl = tk.Label(cache_frame, text=get_db_size(), fg='white', bg='#191414', font=('Segoe UI', 10))
+        cache_size_lbl.pack(side='right', padx=(0, 10))
+        
+        def delete_cache(e=None):
+            try:
+                conn = sqlite3.connect(CACHE_DB_PATH)
+                c = conn.cursor()
+                c.execute("DELETE FROM lyrics")
+                conn.commit()
+                c.execute("VACUUM")
+                conn.close()
+                cache_size_lbl.config(text=get_db_size())
+                self.synced_lyrics = []
+            except Exception as ex:
+                logging.error("Failed to delete cache", exc_info=ex)
+                
+        del_btn = tk.Label(cache_frame, text="Clear", bg='#e91429', fg='white', font=('Segoe UI', 9, 'bold'), padx=10, pady=2, cursor='hand2')
+        del_btn.pack(side='right')
+        del_btn.bind("<Button-1>", delete_cache)
 
         # --- Separator ---
         tk.Frame(self.settings_win, height=1, bg='#282828').pack(fill='x', padx=30, pady=10)
