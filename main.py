@@ -130,7 +130,7 @@ class MiniLyrics:
         self.is_pinned = False
         self.show_title = True
         
-        self.lbl_title = tk.Label(self.root, text="", fg='#a0a0a0', bg='#191414', font=('Arial', 8, 'bold'), justify='center', wraplength=320)
+        self.lbl_title = tk.Label(self.root, text="", fg='#a0a0a0', bg='#191414', font=('Segoe UI', 8, 'bold'), justify='center', wraplength=320)
         self.lbl_title.place(relx=0.5, y=8, anchor='n')
         
         self.lbl_current = tk.Label(self.root, text="Waiting for song...", fg=self.config['color'], bg='#191414', font=('Arial', self.font_cur, 'bold'), wraplength=330, justify="center")
@@ -143,6 +143,8 @@ class MiniLyrics:
         self.grip.place(relx=1.0, rely=1.0, anchor="se")
         
         self.grip.bind("<B1-Motion>", self.on_resize)
+        self.grip.bind("<Enter>", lambda e: not self.is_pinned and self.grip.config(fg='#888888'))
+        self.grip.bind("<Leave>", lambda e: not self.is_pinned and self.grip.config(fg='#333333'))
         self.root.bind("<B1-Motion>", self.drag)
         self.root.bind("<Button-1>", self.click)
         self.root.bind("<Double-1>", lambda e: not self.is_pinned and self.root.destroy()) 
@@ -270,7 +272,7 @@ class MiniLyrics:
             
         self.info_win = tk.Toplevel(self.root)
         self.info_win.title("SpoLyrics Info")
-        self.info_win.geometry("340x400")
+        self.info_win.geometry("420x400")
         self.info_win.configure(bg='#191414')
         self.info_win.attributes('-topmost', True)
         self.info_win.overrideredirect(True)
@@ -337,7 +339,7 @@ class MiniLyrics:
             
         self.settings_win = tk.Toplevel(self.root)
         self.settings_win.title("SpoLyrics Settings")
-        self.settings_win.geometry("380x440")
+        self.settings_win.geometry("380x520")
         self.settings_win.configure(bg='#191414')
         self.settings_win.attributes('-topmost', True)
         self.settings_win.resizable(False, False)
@@ -380,7 +382,7 @@ class MiniLyrics:
             rgb = colorsys.hls_to_rgb(h, l, s)
             return "#{:02x}{:02x}{:02x}".format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
             
-        tk.Label(palette_frame, text="Hue (Warna):", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(10,2))
+        tk.Label(palette_frame, text="Hue:", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(10,2))
         hue_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#1e1e1e', highlightthickness=0, cursor='hand2')
         hue_canvas.pack(pady=(0, 5))
         
@@ -389,7 +391,7 @@ class MiniLyrics:
             hue_canvas.create_rectangle(i*2, 0, (i+1)*2, 12, fill=c, outline=c)
         hue_thumb = hue_canvas.create_rectangle(0, 0, 4, 12, fill='white', outline='black')
         
-        tk.Label(palette_frame, text="Lightness (Kecerahan):", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(5,2))
+        tk.Label(palette_frame, text="Lightness:", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(5,2))
         lit_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#1e1e1e', highlightthickness=0, cursor='hand2')
         lit_canvas.pack(pady=(0, 10))
         
@@ -448,13 +450,13 @@ class MiniLyrics:
         
         def toggle_palette(e=None):
             if not self.palette_visible:
-                self.settings_win.geometry("380x600")
+                self.settings_win.geometry("380x680")
                 update_lit_canvas()
                 palette_frame.pack(fill='x', after=color_frame)
                 hex_entry.delete(0, 'end')
                 hex_entry.insert(0, self.current_hex)
             else:
-                self.settings_win.geometry("380x440")
+                self.settings_win.geometry("380x520")
                 palette_frame.pack_forget()
             self.palette_visible = not self.palette_visible
             
@@ -701,7 +703,7 @@ class MiniLyrics:
                             if song_id != self.current_song:
                                 self.current_song = song_id
                                 self.root.after(0, lambda sid=song_id: self.lbl_title.config(text=sid if self.show_title else ""))
-                                self.root.after(0, self.update_ui, f"Matching smart lyrics...\n{song_id}", "")
+                                self.root.after(0, self.update_ui, "Loading lyrics... ⏳", "")
                                 
                                 async def fetch_and_apply(sid, t, a, d):
                                     await asyncio.sleep(0.5)
@@ -719,7 +721,7 @@ class MiniLyrics:
                         if self.current_song:
                             self.current_song = ""
                             self.synced_lyrics = []
-                            self.root.after(0, self.update_ui, "Tidak ada lagu diputar.", "")
+                            self.root.after(0, self.update_ui, "No song playing.", "")
                         
                 except Exception as e:
                     logging.error("Error in poll_song loop", exc_info=e)
