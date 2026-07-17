@@ -337,7 +337,7 @@ class MiniLyrics:
             
         self.settings_win = tk.Toplevel(self.root)
         self.settings_win.title("SpoLyrics Settings")
-        self.settings_win.geometry("380x410")
+        self.settings_win.geometry("380x440")
         self.settings_win.configure(bg='#191414')
         self.settings_win.attributes('-topmost', True)
         self.settings_win.resizable(False, False)
@@ -350,27 +350,29 @@ class MiniLyrics:
             self.settings_win.destroy()
         self.settings_win.protocol("WM_DELETE_WINDOW", on_settings_close)
         
-        tk.Label(self.settings_win, text="SpoLyrics Settings", fg='white', bg='#191414', font=('Segoe UI', 16, 'bold')).pack(pady=(20, 15))
+        header_frame = tk.Frame(self.settings_win, bg='#191414')
+        header_frame.pack(fill='x', padx=25, pady=(20, 15))
+        tk.Label(header_frame, text="Settings", fg='white', bg='#191414', font=('Segoe UI', 18, 'bold')).pack(side='left')
         
-        info_lbl = tk.Label(self.settings_win, text="❔", fg='#888888', bg='#191414', font=('Segoe UI', 12), cursor='hand2')
-        info_lbl.place(x=340, y=20)
+        info_lbl = tk.Label(header_frame, text="❔", fg='#888888', bg='#191414', font=('Segoe UI', 12), cursor='hand2')
+        info_lbl.pack(side='right', pady=(5,0))
         info_lbl.bind("<Button-1>", lambda e: self.open_info())
         info_lbl.bind("<Enter>", lambda e: info_lbl.config(fg='white'))
         info_lbl.bind("<Leave>", lambda e: info_lbl.config(fg='#888888'))
         
-        # --- Color Picker ---
-        color_frame = tk.Frame(self.settings_win, bg='#191414')
-        color_frame.pack(fill='x', padx=30, pady=5)
+        tk.Label(self.settings_win, text="APPEARANCE", fg='#888888', bg='#191414', font=('Segoe UI', 8, 'bold')).pack(anchor='w', padx=25, pady=(0, 5))
+        app_card = tk.Frame(self.settings_win, bg='#242424')
+        app_card.pack(fill='x', padx=25, pady=(0, 15))
         
-        tk.Label(color_frame, text="Lyrics Color", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        color_frame = tk.Frame(app_card, bg='#242424')
+        color_frame.pack(fill='x', padx=15, pady=12)
+        tk.Label(color_frame, text="Lyrics Color", fg='#e0e0e0', bg='#242424', font=('Segoe UI', 10)).pack(side='left')
         
         self.current_hex = self.config['color']
-        
-        color_btn = tk.Frame(color_frame, bg=self.current_hex, width=50, height=25, cursor='hand2', highlightbackground='#333333', highlightthickness=1)
+        color_btn = tk.Frame(color_frame, bg=self.current_hex, width=24, height=24, cursor='hand2', highlightbackground='#555', highlightthickness=1)
         color_btn.pack(side='right')
         
-        # --- Ultra Modern Inline Sliders ---
-        palette_frame = tk.Frame(self.settings_win, bg='#191414')
+        palette_frame = tk.Frame(app_card, bg='#1e1e1e')
         self.palette_visible = False
         
         import colorsys
@@ -378,8 +380,8 @@ class MiniLyrics:
             rgb = colorsys.hls_to_rgb(h, l, s)
             return "#{:02x}{:02x}{:02x}".format(int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
             
-        tk.Label(palette_frame, text="Hue (Warna):", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(anchor='w', padx=5)
-        hue_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#191414', highlightthickness=0, cursor='hand2')
+        tk.Label(palette_frame, text="Hue (Warna):", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(10,2))
+        hue_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#1e1e1e', highlightthickness=0, cursor='hand2')
         hue_canvas.pack(pady=(0, 5))
         
         for i in range(120):
@@ -387,9 +389,9 @@ class MiniLyrics:
             hue_canvas.create_rectangle(i*2, 0, (i+1)*2, 12, fill=c, outline=c)
         hue_thumb = hue_canvas.create_rectangle(0, 0, 4, 12, fill='white', outline='black')
         
-        tk.Label(palette_frame, text="Lightness (Kecerahan):", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(anchor='w', padx=5)
-        lit_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#191414', highlightthickness=0, cursor='hand2')
-        lit_canvas.pack(pady=(0, 5))
+        tk.Label(palette_frame, text="Lightness (Kecerahan):", fg='#888', bg='#1e1e1e', font=('Segoe UI', 8)).pack(anchor='w', padx=15, pady=(5,2))
+        lit_canvas = tk.Canvas(palette_frame, width=240, height=12, bg='#1e1e1e', highlightthickness=0, cursor='hand2')
+        lit_canvas.pack(pady=(0, 10))
         
         lit_rects = []
         for i in range(120):
@@ -397,10 +399,10 @@ class MiniLyrics:
             lit_rects.append(r)
         lit_thumb = lit_canvas.create_rectangle(120, 0, 124, 12, fill='black', outline='white')
         
-        custom_frame = tk.Frame(palette_frame, bg='#191414')
-        custom_frame.pack(pady=(5,0))
-        tk.Label(custom_frame, text="Hex:", fg='#888', bg='#191414', font=('Segoe UI', 9)).pack(side='left')
-        hex_entry = tk.Entry(custom_frame, width=9, bg='#282828', fg='white', insertbackground='white', relief='flat', justify='center')
+        custom_frame = tk.Frame(palette_frame, bg='#1e1e1e')
+        custom_frame.pack(pady=(0, 15))
+        tk.Label(custom_frame, text="Hex:", fg='#888', bg='#1e1e1e', font=('Segoe UI', 9)).pack(side='left')
+        hex_entry = tk.Entry(custom_frame, width=9, bg='#333', fg='white', insertbackground='white', relief='flat', justify='center')
         hex_entry.insert(0, self.current_hex)
         hex_entry.pack(side='left', padx=5)
         
@@ -446,41 +448,39 @@ class MiniLyrics:
         
         def toggle_palette(e=None):
             if not self.palette_visible:
-                self.settings_win.geometry("380x540")
+                self.settings_win.geometry("380x600")
                 update_lit_canvas()
-                palette_frame.pack(fill='x', padx=30, after=color_frame)
+                palette_frame.pack(fill='x', after=color_frame)
                 hex_entry.delete(0, 'end')
                 hex_entry.insert(0, self.current_hex)
             else:
-                self.settings_win.geometry("380x410")
+                self.settings_win.geometry("380x440")
                 palette_frame.pack_forget()
             self.palette_visible = not self.palette_visible
             
         color_btn.bind("<Button-1>", toggle_palette)
         
-        # --- Opacity Slider ---
-        op_frame = tk.Frame(self.settings_win, bg='#191414')
-        op_frame.pack(fill='x', padx=30, pady=(15, 0))
+        tk.Frame(app_card, height=1, bg='#333').pack(fill='x', padx=15)
         
-        tk.Label(op_frame, text="Window Opacity", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
-        tk.Label(op_frame, text="(Normal: 85%)", fg='#666666', bg='#191414', font=('Segoe UI', 9)).pack(side='left', padx=5, pady=(2,0))
+        op_frame = tk.Frame(app_card, bg='#242424')
+        op_frame.pack(fill='x', padx=15, pady=12)
+        tk.Label(op_frame, text="Window Opacity", fg='#e0e0e0', bg='#242424', font=('Segoe UI', 10)).pack(side='left')
         
         self.cur_op = self.config.get('opacity', 0.85)
-        op_val_lbl = tk.Label(op_frame, text=f"{int(self.cur_op*100)}%", fg='white', bg='#191414', font=('Segoe UI', 10, 'bold'))
+        op_val_lbl = tk.Label(op_frame, text=f"{int(self.cur_op*100)}%", fg='#888', bg='#242424', font=('Segoe UI', 9, 'bold'))
         op_val_lbl.pack(side='right')
         
-        op_canvas = tk.Canvas(self.settings_win, width=320, height=14, bg='#191414', highlightthickness=0, cursor='hand2')
-        op_canvas.pack(pady=(5, 15))
-        
-        op_canvas.create_rectangle(0, 5, 320, 9, fill='#333333', outline='#333333')
-        op_fill = op_canvas.create_rectangle(0, 5, int(self.cur_op*320), 9, fill='#1DB954', outline='#1DB954')
-        th_x = int(self.cur_op*320)
+        op_canvas = tk.Canvas(app_card, width=330, height=14, bg='#242424', highlightthickness=0, cursor='hand2')
+        op_canvas.pack(pady=(0, 15))
+        op_canvas.create_rectangle(20, 5, 310, 9, fill='#333', outline='#333', width=0)
+        op_fill = op_canvas.create_rectangle(20, 5, int(self.cur_op*290)+20, 9, fill='#1DB954', outline='#1DB954', width=0)
+        th_x = int(self.cur_op*290)+20
         op_thumb = op_canvas.create_oval(th_x-6, 1, th_x+6, 13, fill='white', outline='white')
         
         def on_op_drag(e):
-            x = max(32, min(e.x, 320)) # min 10% opacity
-            self.cur_op = x / 320.0
-            op_canvas.coords(op_fill, 0, 5, x, 9)
+            x = max(20+29, min(e.x, 310))
+            self.cur_op = (x-20) / 290.0
+            op_canvas.coords(op_fill, 20, 5, x, 9)
             op_canvas.coords(op_thumb, x-6, 1, x+6, 13)
             op_val_lbl.config(text=f"{int(self.cur_op*100)}%")
             self.root.attributes('-alpha', self.cur_op)
@@ -488,20 +488,22 @@ class MiniLyrics:
         op_canvas.bind("<B1-Motion>", on_op_drag)
         op_canvas.bind("<Button-1>", on_op_drag)
         
-        # --- Auto Start Toggle ---
-        toggle_frame = tk.Frame(self.settings_win, bg='#191414')
-        toggle_frame.pack(fill='x', padx=30, pady=5)
+        tk.Label(self.settings_win, text="SYSTEM", fg='#888888', bg='#191414', font=('Segoe UI', 8, 'bold')).pack(anchor='w', padx=25, pady=(5, 5))
+        sys_card = tk.Frame(self.settings_win, bg='#242424')
+        sys_card.pack(fill='x', padx=25, pady=(0, 15))
         
-        tk.Label(toggle_frame, text="Auto-start Windows", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        toggle_frame = tk.Frame(sys_card, bg='#242424')
+        toggle_frame.pack(fill='x', padx=15, pady=12)
+        tk.Label(toggle_frame, text="Auto-start Windows", fg='#e0e0e0', bg='#242424', font=('Segoe UI', 10)).pack(side='left')
         
         class ToggleSwitch(tk.Canvas):
             def __init__(self, parent, initial_state=False, *args, **kwargs):
-                tk.Canvas.__init__(self, parent, width=46, height=24, bg='#191414', highlightthickness=0, cursor='hand2', *args, **kwargs)
+                tk.Canvas.__init__(self, parent, width=40, height=20, bg='#242424', highlightthickness=0, cursor='hand2', *args, **kwargs)
                 self.is_on = initial_state
-                self.track = self.create_oval(2, 2, 22, 22, fill="#555", outline="#555")
-                self.track2 = self.create_oval(24, 2, 44, 22, fill="#555", outline="#555")
-                self.rect = self.create_rectangle(12, 2, 34, 22, fill="#555", outline="#555")
-                self.thumb = self.create_oval(4, 4, 20, 20, fill="white", outline="white")
+                self.track = self.create_oval(2, 2, 18, 18, fill="#555", outline="#555")
+                self.track2 = self.create_oval(22, 2, 38, 18, fill="#555", outline="#555")
+                self.rect = self.create_rectangle(10, 2, 30, 18, fill="#555", outline="#555")
+                self.thumb = self.create_oval(4, 4, 16, 16, fill="white", outline="white")
                 self.bind("<Button-1>", self.toggle)
                 self._update_ui()
                 
@@ -514,35 +516,35 @@ class MiniLyrics:
                     self.itemconfig(self.track, fill="#1DB954", outline="#1DB954")
                     self.itemconfig(self.track2, fill="#1DB954", outline="#1DB954")
                     self.itemconfig(self.rect, fill="#1DB954", outline="#1DB954")
-                    self.coords(self.thumb, 26, 4, 42, 20)
+                    self.coords(self.thumb, 24, 4, 36, 16)
                 else:
-                    self.itemconfig(self.track, fill="#555555", outline="#555555")
-                    self.itemconfig(self.track2, fill="#555555", outline="#555555")
-                    self.itemconfig(self.rect, fill="#555555", outline="#555555")
-                    self.coords(self.thumb, 4, 4, 20, 20)
+                    self.itemconfig(self.track, fill="#555", outline="#555")
+                    self.itemconfig(self.track2, fill="#555", outline="#555")
+                    self.itemconfig(self.rect, fill="#555", outline="#555")
+                    self.coords(self.thumb, 4, 4, 16, 16)
 
         toggle = ToggleSwitch(toggle_frame, initial_state=self.config['auto_start'])
         toggle.pack(side='right')
-
-        # --- Cache Info ---
-        cache_frame = tk.Frame(self.settings_win, bg='#191414')
-        cache_frame.pack(fill='x', padx=30, pady=5)
         
-        tk.Label(cache_frame, text="Lyrics Cache", fg='#b3b3b3', bg='#191414', font=('Segoe UI', 11, 'bold')).pack(side='left')
+        tk.Frame(sys_card, height=1, bg='#333').pack(fill='x', padx=15)
+        
+        cache_frame = tk.Frame(sys_card, bg='#242424')
+        cache_frame.pack(fill='x', padx=15, pady=12)
+        tk.Label(cache_frame, text="Lyrics Cache", fg='#e0e0e0', bg='#242424', font=('Segoe UI', 10)).pack(side='left')
         
         def get_db_size():
             try:
                 if os.path.exists(CACHE_DB_PATH):
                     size_bytes = os.path.getsize(CACHE_DB_PATH)
-                    if size_bytes >= 1024 * 1024:
-                        return f"{size_bytes / (1024 * 1024):.2f} MB"
-                    else:
-                        return f"{size_bytes / 1024:.2f} KB"
-            except Exception:
-                pass
+                    if size_bytes >= 1024 * 1024: return f"{size_bytes / (1024 * 1024):.2f} MB"
+                    else: return f"{size_bytes / 1024:.2f} KB"
+            except Exception: pass
             return "0.00 KB"
             
-        cache_size_lbl = tk.Label(cache_frame, text=get_db_size(), fg='white', bg='#191414', font=('Segoe UI', 10))
+        del_btn = tk.Label(cache_frame, text="Clear", bg='#333', fg='#ff4444', font=('Segoe UI', 8, 'bold'), padx=8, pady=2, cursor='hand2')
+        del_btn.pack(side='right')
+        
+        cache_size_lbl = tk.Label(cache_frame, text=get_db_size(), fg='#888', bg='#242424', font=('Segoe UI', 9))
         cache_size_lbl.pack(side='right', padx=(0, 10))
         
         def delete_cache(e=None):
@@ -558,14 +560,10 @@ class MiniLyrics:
             except Exception as ex:
                 logging.error("Failed to delete cache", exc_info=ex)
                 
-        del_btn = tk.Label(cache_frame, text="Clear", bg='#e91429', fg='white', font=('Segoe UI', 9, 'bold'), padx=10, pady=2, cursor='hand2')
-        del_btn.pack(side='right')
         del_btn.bind("<Button-1>", delete_cache)
-
-        # --- Separator ---
-        tk.Frame(self.settings_win, height=1, bg='#282828').pack(fill='x', padx=30, pady=10)
+        del_btn.bind("<Enter>", lambda e: del_btn.config(bg='#ff4444', fg='white'))
+        del_btn.bind("<Leave>", lambda e: del_btn.config(bg='#333', fg='#ff4444'))
         
-        # --- Save Button ---
         def save_and_apply(e=None):
             self.config['color'] = self.current_hex
             self.config['auto_start'] = toggle.is_on
@@ -580,15 +578,12 @@ class MiniLyrics:
             self.settings_win.protocol("WM_DELETE_WINDOW", lambda: None)
             self.root.after(100, lambda: self.settings_win.destroy() if self.settings_win.winfo_exists() else None)
             
-        def on_enter(e): save_btn.config(bg='#1ed760')
-        def on_leave(e): save_btn.config(bg='#1DB954')
-
-        save_btn = tk.Label(self.settings_win, text="Save & Apply", bg='#1DB954', fg='white', font=('Segoe UI', 11, 'bold'), pady=8, cursor='hand2')
-        save_btn.pack(fill='x', padx=40, pady=(0, 20))
+        save_btn = tk.Label(self.settings_win, text="Save & Apply", bg='#1DB954', fg='white', font=('Segoe UI', 10, 'bold'), pady=8, cursor='hand2')
+        save_btn.pack(fill='x', padx=25, pady=(5, 20))
         
         save_btn.bind("<Button-1>", save_and_apply)
-        save_btn.bind("<Enter>", on_enter)
-        save_btn.bind("<Leave>", on_leave)
+        save_btn.bind("<Enter>", lambda e: save_btn.config(bg='#1ed760'))
+        save_btn.bind("<Leave>", lambda e: save_btn.config(bg='#1DB954'))
 
     def media_control(self, action):
         if self.is_pinned: return "break"
