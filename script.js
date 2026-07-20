@@ -15,6 +15,8 @@ const translations = {
     hero_cta_primary: 'Mulai Instalasi',
     hero_cta_ghost: 'Lihat Fitur ▾',
     stat_version: 'Versi Terbaru',
+    stat_features: 'Fitur',
+    stat_sync: 'Sinkron Presisi',
     stat_supported: 'Didukung',
     stat_license: 'Lisensi',
     stat_exclusive: 'Eksklusif',
@@ -131,24 +133,47 @@ try {
 } catch (e) {}
 applyLanguage(savedLang);
 
-// ===== 2) Reveal-on-scroll for sections & cards =====
-const revealTargets = document.querySelectorAll(
-  '.about-card, .card, .ctrl, .install-card, .note, .controls-shot, .hero-shot, .cta-card'
-);
-revealTargets.forEach((el) => el.classList.add('reveal'));
+// ===== 2) AOS handles reveal-on-scroll. Count-up for hero stats =====
+function animateCountUp(el, target, suffix) {
+  const dur = 1400;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(eased * target) + (suffix || '');
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+// trigger count-up when hero stats are in view
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.stat-num[data-count]').forEach((s) => {
+        animateCountUp(s, parseInt(s.getAttribute('data-count'), 10), s.getAttribute('data-suffix') || '');
+      });
+      statsObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+const heroStats = document.querySelector('.hero-stats');
+if (heroStats) statsObs.observe(heroStats);
 
-const io = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.12 }
-);
-revealTargets.forEach((el) => io.observe(el));
+// ===== 2b) Hero background parallax (blobs drift on scroll) =====
+const blobLayer = document.querySelector('.bg-blobs');
+if (blobLayer) {
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        blobLayer.style.transform = `translateY(${y * 0.15}px)`;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
 
 // ===== 3) Copy-to-clipboard for code blocks =====
 const copyLabel = () => (document.documentElement.lang === 'id' ? 'Disalin!' : 'Copied!');
