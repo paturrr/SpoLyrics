@@ -203,7 +203,8 @@ fetchLatestVersion();
 (function () {
   const demoSongs = [
     {
-      title: 'Aurora — Runaway',
+      artist: 'Aurora',
+      song: 'Runaway',
       lines: [
         { t: 0,  c: 'I was listening to the ocean' },
         { t: 3,  c: 'Saw a face in the sand' },
@@ -216,7 +217,8 @@ fetchLatestVersion();
       ],
     },
     {
-      title: 'Lauv — I Like Me Better',
+      artist: 'Lauv',
+      song: 'I Like Me Better',
       lines: [
         { t: 0,  c: "I don't know what it is" },
         { t: 3,  c: "But I got that feeling" },
@@ -229,7 +231,8 @@ fetchLatestVersion();
       ],
     },
     {
-      title: 'Coldplay — Yellow',
+      artist: 'Coldplay',
+      song: 'Yellow',
       lines: [
         { t: 0,  c: 'Look at the stars' },
         { t: 3,  c: 'Look how they shine for you' },
@@ -266,7 +269,10 @@ fetchLatestVersion();
   function render() {
     const song = demoSongs[idx];
     const dur = songDuration(song);
-    el.title.textContent = song.title;
+    el.title.innerHTML = '<svg class="dp-note" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>' +
+      '<span class="dp-song-name">' + song.song + '</span>' +
+      '<span class="dp-dot">•</span>' +
+      '<span class="dp-artist">' + song.artist + '</span>';
     el.song.textContent = `Demo Track ${idx + 1} / ${demoSongs.length}`;
 
     // find current line
