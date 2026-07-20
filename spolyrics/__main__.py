@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.0"
+CURRENT_VERSION = "1.3.1"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -171,6 +171,11 @@ class MiniLyrics:
         self.lbl_next = tk.Label(self.root, text="", fg='#b3b3b3', bg='#191414', font=('Arial', self.font_nxt), wraplength=330, justify="center")
         self.lbl_next.pack(expand=True, fill='both', padx=10, pady=(0, 15))
         
+        self.progress_bg = tk.Frame(self.root, bg='#333333', height=2)
+        self.progress_bg.place(relx=0, rely=1.0, anchor='sw', relwidth=1.0)
+        self.progress_fg = tk.Frame(self.progress_bg, bg=self.config['color'], height=2)
+        self.progress_fg.place(relx=0, rely=0, anchor='nw', relwidth=0.0)
+        
         self.update_available = False
         self.root.after(2000, self.check_updates)
 
@@ -204,6 +209,7 @@ class MiniLyrics:
         self.current_song = ""
         self.synced_lyrics = []
         self.base_pos = 0.0
+        self.duration = 0.0
         self.base_time = time.time()
         self.is_playing = False
         
@@ -225,11 +231,16 @@ class MiniLyrics:
 
 
     def render_lyrics(self):
+        pos = self.base_pos
+        if self.is_playing:
+            pos += time.time() - self.base_time
+            
+        if self.duration > 0:
+            self.progress_fg.place(relwidth=min(1.0, max(0.0, pos / self.duration)))
+        else:
+            self.progress_fg.place(relwidth=0.0)
+
         if self.synced_lyrics:
-            pos = self.base_pos
-            if self.is_playing:
-                pos += time.time() - self.base_time
-                
             cur_text, next_text = "...", ""
             for i, (lyric_time, txt) in enumerate(self.synced_lyrics):
                 if pos >= lyric_time:
@@ -757,6 +768,7 @@ class MiniLyrics:
                                         pos += diff
                                     
                                 self.base_pos = pos
+                                self.duration = duration
                                 self.base_time = time.time()
                             
                             if song_id != self.current_song:
