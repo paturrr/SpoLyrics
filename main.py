@@ -15,7 +15,7 @@ from assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.2.3"
+CURRENT_VERSION = "1.2.4"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -94,6 +94,10 @@ def get_exe_path():
     script_exe = os.path.join(sys.prefix, 'Scripts', 'spolyrics.exe')
     if os.path.exists(script_exe):
         return script_exe
+    
+    pythonw = os.path.join(sys.prefix, 'pythonw.exe')
+    if os.path.exists(pythonw):
+        return (pythonw, os.path.abspath(__file__))
     return sys.executable
 
 def set_auto_start(enable, force_update=False):
@@ -104,7 +108,11 @@ def set_auto_start(enable, force_update=False):
             exe_path = get_exe_path()
             if exe_path and os.path.exists(icon_path):
                 if force_update or not os.path.exists(STARTUP_SHORTCUT):
-                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
+                    if isinstance(exe_path, tuple):
+                        target, args = exe_path
+                        ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{target}';$s.Arguments='\"{args}\"';$s.IconLocation='{icon_path}';$s.Save()"
+                    else:
+                        ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                     subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
         else:
             if os.path.exists(STARTUP_SHORTCUT):
@@ -790,14 +798,24 @@ class MiniLyrics:
             import tempfile
             bat_path = os.path.join(tempfile.gettempdir(), "update_spolyrics.bat")
             exe_path = get_exe_path()
+            
+            # Extract arguments if get_exe_path returns pythonw.exe + main.py
+            exe_cmd = f'"{exe_path}"'
+            if isinstance(exe_path, tuple):
+                exe_cmd = f'"{exe_path[0]}" "{exe_path[1]}"'
+                
             with open(bat_path, 'w') as f:
                 f.write('@echo off\n')
                 f.write('echo Updating SpoLyrics...\n')
                 f.write('ping 127.0.0.1 -n 3 > nul\n')
-                f.write('python -m pip install --upgrade spolyrics\n')
-                f.write(f'start "" "{exe_path}"\n')
+                import sys
+                f.write(f'"{sys.executable}" -m pip install --upgrade --no-cache-dir spolyrics\n')
+                f.write(f'start "" {exe_cmd}\n')
                 f.write('del "%~f0"\n')
-            subprocess.Popen(['cmd.exe', '/c', bat_path], creationflags=16)
+            
+            # Run bat silently without creating a window
+            import subprocess
+            subprocess.Popen(['cmd.exe', '/c', bat_path], creationflags=0x08000000)
             if getattr(self, 'tray_icon', None):
                 self.tray_icon.stop()
             self.root.quit()
@@ -829,15 +847,19 @@ def create_shortcut():
             with open(path_file, 'r') as f:
                 saved_path = f.read().strip()
                 
-        if saved_path != exe_path:
+        if saved_path != str(exe_path):
             needs_update = True
             path_changed = True
             with open(path_file, 'w') as f:
-                f.write(exe_path)
+                f.write(str(exe_path))
             
         if needs_update:
             if exe_path:
-                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
+                if isinstance(exe_path, tuple):
+                    target, args = exe_path
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{target}';$s.Arguments='\"{args}\"';$s.IconLocation='{icon_path}';$s.Save()"
+                else:
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
     except Exception as e:
         logging.error("Failed to create shortcut", exc_info=e)
