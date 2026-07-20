@@ -4,6 +4,7 @@
 const translations = {
   en: {}, // English is the default text already in the HTML
   id: {
+    nav_demo: 'Demo Langsung',
     nav_features: 'Fitur',
     nav_controls: 'Kontrol',
     nav_install: 'Instalasi',
@@ -25,6 +26,10 @@ const translations = {
     about_p3:
       '💡 SpoLyrics masih dalam pengembangan aktif. Temukan bug atau punya ide? Jangan ragu buka issue di GitHub!',
     features_eyebrow: 'Kenapa SpoLyrics?',
+    demo_eyebrow: 'Coba Sekarang',
+    demo_title: 'Demo Langsung',
+    demo_sub: 'Penasaran gimana rasanya? Mainkan simulasi interaktif di bawah — tanpa perlu instal.',
+    demo_hint: 'Ini simulasi visual dari aplikasi desktop. Aplikasi asli sinkron langsung dengan Spotify milikmu.',
     features_title: 'Fitur Unggulan',
     features_sub: 'Dirancang ramping, cepat, dan elegan — hanya yang kamu butuhkan.',
     feat1_t: 'Zero-Delay Sync',
@@ -193,3 +198,124 @@ async function fetchLatestVersion() {
   }
 }
 fetchLatestVersion();
+
+// ===== 6) Interactive Demo Player (visual simulation) =====
+(function () {
+  const demoSongs = [
+    {
+      title: 'Aurora — Runaway',
+      lines: [
+        { t: 0,  c: 'I was listening to the ocean' },
+        { t: 3,  c: 'Saw a face in the sand' },
+        { t: 6,  c: 'But when I picked it up' },
+        { t: 9,  c: 'Then it vanished away' },
+        { t: 12, c: 'And when I looked up' },
+        { t: 15, c: 'It felt like a story' },
+        { t: 18, c: "And I said 'Take me home'" },
+        { t: 22, c: 'And take me all the way' },
+      ],
+    },
+    {
+      title: 'Lauv — I Like Me Better',
+      lines: [
+        { t: 0,  c: "I don't know what it is" },
+        { t: 3,  c: "But I got that feeling" },
+        { t: 6,  c: "Waking up in this bed next to you" },
+        { t: 9,  c: "Swear the room, yeah, it got no ceiling" },
+        { t: 13, c: "I like me better when I'm with you" },
+        { t: 17, c: "I like me better when I'm with you" },
+        { t: 21, c: "I knew from the first time" },
+        { t: 24, c: "I'd stay for a long time" },
+      ],
+    },
+    {
+      title: 'Coldplay — Yellow',
+      lines: [
+        { t: 0,  c: 'Look at the stars' },
+        { t: 3,  c: 'Look how they shine for you' },
+        { t: 7,  c: 'And everything you do' },
+        { t: 10, c: 'Yeah, they were all yellow' },
+        { t: 14, c: 'I came along' },
+        { t: 17, c: 'I wrote a song for you' },
+        { t: 20, c: 'And all the things you do' },
+        { t: 24, c: 'And it was called yellow' },
+      ],
+    },
+  ];
+
+  const el = {
+    player: document.getElementById('demoPlayer'),
+    title: document.getElementById('dpTitle'),
+    current: document.getElementById('dpCurrent'),
+    next: document.getElementById('dpNext'),
+    fill: document.getElementById('dpFill'),
+    play: document.getElementById('dcPlay'),
+    prev: document.getElementById('dcPrev'),
+    nextBtn: document.getElementById('dcNext'),
+    song: document.getElementById('dcSong'),
+  };
+  if (!el.player) return; // demo section not present
+
+  let idx = 0;
+  let elapsed = 0;
+  let timer = null;
+  let playing = false;
+  const TICK = 100; // ms
+  const songDuration = (s) => s.lines[s.lines.length - 1].t + 4;
+
+  function render() {
+    const song = demoSongs[idx];
+    const dur = songDuration(song);
+    el.title.textContent = song.title;
+    el.song.textContent = `Demo Track ${idx + 1} / ${demoSongs.length}`;
+
+    // find current line
+    let curLine = song.lines[0];
+    let nextLine = null;
+    for (let i = 0; i < song.lines.length; i++) {
+      if (elapsed >= song.lines[i].t) {
+        curLine = song.lines[i];
+        nextLine = song.lines[i + 1] || null;
+      }
+    }
+    el.current.textContent = curLine.c;
+    el.next.textContent = nextLine ? nextLine.c : '';
+    el.fill.style.width = Math.min(100, (elapsed / dur) * 100) + '%';
+  }
+
+  function tick() {
+    elapsed += TICK / 1000;
+    const dur = songDuration(demoSongs[idx]);
+    if (elapsed >= dur) {
+      // auto-advance to next song
+      idx = (idx + 1) % demoSongs.length;
+      elapsed = 0;
+    }
+    render();
+  }
+
+  function play() {
+    if (playing) return;
+    playing = true;
+    el.play.textContent = '⏸️';
+    timer = setInterval(tick, TICK);
+  }
+  function pause() {
+    playing = false;
+    el.play.textContent = '▶️';
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+  function togglePlay() { playing ? pause() : play(); }
+  function goto(newIdx) {
+    idx = (newIdx + demoSongs.length) % demoSongs.length;
+    elapsed = 0;
+    render();
+  }
+
+  el.play.addEventListener('click', togglePlay);
+  el.next.parentElement && el.nextBtn.addEventListener('click', () => goto(idx + 1));
+  el.prev.addEventListener('click', () => goto(idx - 1));
+
+  render(); // initial paint
+})();
