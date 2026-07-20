@@ -22,11 +22,11 @@ try:
 except Exception:
     pass
 
-from assets import ICON_B64
+from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.2.7"
+CURRENT_VERSION = "1.2.8"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -111,13 +111,9 @@ def get_exe_path():
         pythonw = os.path.join(sys.prefix, 'pythonw.exe') # Global install
         
     if os.path.exists(pythonw):
-        return (pythonw, os.path.abspath(__file__))
+        return (pythonw, "-m spolyrics")
         
-    # Fallback to the pip launcher
-    script_exe = os.path.join(sys.prefix, 'Scripts', 'spolyrics.exe')
-    if os.path.exists(script_exe):
-        return script_exe
-        
+    # Fallback to sys.executable
     return sys.executable
 
 def set_auto_start(enable, force_update=False):
