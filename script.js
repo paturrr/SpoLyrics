@@ -159,22 +159,6 @@ const statsObs = new IntersectionObserver((entries) => {
 const heroStats = document.querySelector('.hero-stats');
 if (heroStats) statsObs.observe(heroStats);
 
-// ===== 2b) Hero background parallax (blobs drift on scroll) =====
-const blobLayer = document.querySelector('.bg-blobs');
-if (blobLayer) {
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        const y = window.scrollY;
-        blobLayer.style.transform = `translateY(${y * 0.15}px)`;
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-}
-
 // ===== 3) Copy-to-clipboard for code blocks =====
 const copyLabel = () => (document.documentElement.lang === 'id' ? 'Disalin!' : 'Copied!');
 document.querySelectorAll('.copy-btn').forEach((btn) => {
