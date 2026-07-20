@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.4"
+CURRENT_VERSION = "1.3.5"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -100,7 +100,11 @@ def save_config(config):
 
 def get_exe_path():
     import sys
-    return sys.executable
+    import os
+    pythonw = os.path.join(sys.prefix, 'Scripts', 'pythonw.exe')
+    if not os.path.exists(pythonw):
+        pythonw = os.path.join(sys.prefix, 'pythonw.exe')
+    return (pythonw, "-m spolyrics")
 
 def set_auto_start(enable, force_update=False):
     try:
@@ -867,8 +871,13 @@ def create_shortcut():
             path_changed = True
             with open(path_file, 'w') as f:
                 f.write(str(exe_path))
+        
         launcher_vbs = os.path.join(app_dir, 'launcher.vbs')
-        vbs_content = f'Set WshShell = CreateObject("WScript.Shell")\nWshShell.Run """{exe_path}""", 0, False\n'
+        
+        if isinstance(exe_path, tuple):
+            vbs_content = f'Set WshShell = CreateObject("WScript.Shell")\nWshShell.Run """{exe_path[0]}"" {exe_path[1]}", 0, False\n'
+        else:
+            vbs_content = f'Set WshShell = CreateObject("WScript.Shell")\nWshShell.Run """{exe_path}""", 0, False\n'
         
         # Selalu update launcher.vbs
         try:
