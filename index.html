@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpoLyrics — Zero-Delay Spotify Lyrics Miniplayer</title>
+  <meta name="description" content="SpoLyrics: a minimalist, transparent, zero-delay Spotify lyrics miniplayer for Windows. Glassmorphism UI, invisible controls, 100% precise sync." />
+  <meta name="author" content="paturrr" />
+  <meta name="keywords" content="SpoLyrics, Spotify lyrics, lirik Spotify, miniplayer, Windows, glassmorphism, zero-delay" />
+  <!-- Open Graph / social preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SpoLyrics — Zero-Delay Spotify Lyrics Miniplayer" />
+  <meta property="og:description" content="A minimalist, transparent, 100% precise-sync Spotify lyrics miniplayer for Windows. Glassmorphism UI, invisible controls." />
+  <meta property="og:image" content="assets/og-image.png" />
+  <meta property="og:url" content="https://paturrr.github.io/SpoLyrics/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SpoLyrics — Zero-Delay Spotify Lyrics Miniplayer" />
+  <meta name="twitter:description" content="A minimalist, transparent, 100% precise-sync Spotify lyrics miniplayer for Windows." />
+  <meta name="twitter:image" content="assets/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="assets/icon.ico" />
+</head>
+<body>
+  <!-- Animated background blobs -->
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar glass">
+    <a href="#home" class="brand">
+      <img src="assets/icon.ico" alt="SpoLyrics" class="brand-logo" />
+      <span class="brand-name">SpoLyrics</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#fitur" data-i18n="nav_features">Features</a>
+      <a href="#kontrol" data-i18n="nav_controls">Controls</a>
+      <a href="#install" data-i18n="nav_install">Installation</a>
+      <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener" class="nav-gh">GitHub</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="id" aria-pressed="false">ID</button>
+      </div>
+      <a href="#install" class="btn btn-primary btn-sm" data-i18n="nav_cta">Install Now</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div class="badges">
+        <span class="pill">⚡ 0-Delay Sync</span>
+        <span class="pill">🪟 Native Windows API</span>
+        <span class="pill">🎨 Glassmorphism UI</span>
+      </div>
+      <h1 class="hero-title" data-i18n-html="hero_title">Spotify Lyrics <span class="grad">Zero Delay.</span><br />Zero Hassle.</h1>
+      <p class="hero-sub" data-i18n-html="hero_sub">
+        SpoLyrics is a Spotify lyrics miniplayer that is <strong>minimalist</strong>,
+        <strong>transparent</strong>, and <strong>100% precisely synced</strong> using
+        Windows System Media Transport Controls. Built with Python for a better
+        listening experience while you work.
+      </p>
+      <div class="hero-cta">
+        <a href="#install" class="btn btn-primary" data-i18n="hero_cta_primary">Start Installing</a>
+        <a href="#fitur" class="btn btn-ghost" data-i18n="hero_cta_ghost">See Features ▾</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">1.2.1</span><span class="stat-label" data-i18n="stat_version">Latest Version</span></div>
+        <div class="stat"><span class="stat-num">Py 3.8–3.12</span><span class="stat-label" data-i18n="stat_supported">Supported</span></div>
+        <div class="stat"><span class="stat-num">MIT</span><span class="stat-label" data-i18n="stat_license">License</span></div>
+        <div class="stat"><span class="stat-num">Windows 10/11</span><span class="stat-label" data-i18n="stat_exclusive">Exclusive</span></div>
+      </div>
+    </div>
+    <div class="hero-shot glass">
+      <img src="assets/1.png" alt="SpoLyrics transparent UI with synced lyrics" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about">
+    <div class="about-card glass">
+      <h2 data-i18n="about_title">About the App</h2>
+      <p data-i18n="about_p1">
+        SpoLyrics was built to solve a simple complaint from friends: they wanted to
+        listen to songs on Spotify or YouTube Music while working, but the official
+        miniplayers didn't show any lyrics at all.
+      </p>
+      <p data-i18n-html="about_p2">
+        The app pulls duration data <strong>in real time directly from the Windows
+        system core</strong>, so lyrics sync is 100% precise without relying on any
+        third-party server. The result: lyrics flow along with the song, as smoothly as possible.
+      </p>
+      <p class="muted" data-i18n="about_p3">💡 SpoLyrics is still in active development. Found a bug or have an idea? Don't hesitate to open an issue on GitHub!</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="fitur">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="features_eyebrow">Why SpoLyrics?</span>
+      <h2 data-i18n="features_title">Key Features</h2>
+      <p class="section-sub" data-i18n="features_sub">Designed lean, fast, and elegant — only what you need.</p>
+    </div>
+    <div class="grid">
+      <article class="card glass">
+        <div class="card-ico">⚡</div>
+        <h3 data-i18n="feat1_t">Zero-Delay Sync</h3>
+        <p data-i18n="feat1_d">100% precise time sync. Pulls real-time duration data straight from the Windows OS core.</p>
+      </article>
+      <article class="card glass">
+        <div class="card-ico">🎯</div>
+        <h3 data-i18n="feat2_t">Smart Duration Match</h3>
+        <p data-i18n="feat2_d">Automatically matches lyrics based on the duration of the playing song version — fixes the Radio Edit vs Album Version mismatch.</p>
+      </article>
+      <article class="card glass">
+        <div class="card-ico">🎨</div>
+        <h3 data-i18n="feat3_t">Glassmorphism UI</h3>
+        <p data-i18n="feat3_d">Elegant, transparent, and borderless design. Blends beautifully with your desktop wallpaper.</p>
+      </article>
+      <article class="card glass">
+        <div class="card-ico">🖱️</div>
+        <h3 data-i18n="feat4_t">Freely Draggable</h3>
+        <p data-i18n="feat4_d">Left-click and hold anywhere to drag the lyrics window to your favorite spot.</p>
+      </article>
+      <article class="card glass">
+        <div class="card-ico">📦</div>
+        <h3 data-i18n="feat5_t">System Tray Integration</h3>
+        <p data-i18n="feat5_d">Runs quietly in the background. Right-click the tray icon to open settings, hide lyrics, or view shortcuts.</p>
+      </article>
+      <article class="card glass">
+        <div class="card-ico">⚙️</div>
+        <h3 data-i18n="feat6_t">Advanced Customization</h3>
+        <p data-i18n="feat6_d">Change lyric color (real-time HSV picker), adjust transparency, and enable "Auto-Start with Windows". Saved permanently.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Invisible Controls -->
+  <section class="section" id="kontrol">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="controls_eyebrow">Little Secret</span>
+      <h2 data-i18n="controls_title">Invisible Controls</h2>
+      <p class="section-sub" data-i18n="controls_sub">A super clean UI with no conventional buttons. Use these mouse gestures:</p>
+    </div>
+    <div class="controls-grid">
+      <div class="ctrl glass"><code>Right Click</code><span data-i18n="ctrl1">Play / Pause</span></div>
+      <div class="ctrl glass"><code>Scroll Up/Down</code><span data-i18n="ctrl2">Next / Previous track</span></div>
+      <div class="ctrl glass"><code>Middle Click</code><span data-i18n="ctrl3">Toggle Pin / Lock window 🔒</span></div>
+      <div class="ctrl glass"><code>Ctrl + Left Click</code><span data-i18n="ctrl4">Toggle song title</span></div>
+      <div class="ctrl glass"><code>Ctrl + Scroll</code><span data-i18n="ctrl5">Increase / decrease font</span></div>
+      <div class="ctrl glass"><code>Drag ⇲ Bottom Right</code><span data-i18n="ctrl6">Resize the window</span></div>
+      <div class="ctrl glass"><code>Double Left Click</code><span data-i18n="ctrl7">Close the app</span></div>
+      <div class="ctrl glass"><code>3-Finger Tap</code><span data-i18n="ctrl8">Middle click (touchpad)</span></div>
+    </div>
+    <div class="controls-shot glass">
+      <img src="assets/2.png" alt="SpoLyrics modern settings and shortcuts" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- Installation -->
+  <section class="section" id="install">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="install_eyebrow">Get Started</span>
+      <h2 data-i18n="install_title">How to Install</h2>
+      <p class="section-sub" data-i18n="install_sub">One command. Requires Python 3.8 – 3.12 (do NOT use 3.13!)</p>
+    </div>
+
+    <div class="install-wrap">
+      <div class="install-card glass">
+        <h3 data-i18n="install_pip_t">🚀 Install via pip</h3>
+        <p class="muted" data-i18n="install_pip_d">Open Windows Terminal / Command Prompt and run:</p>
+        <div class="code-block">
+          <button class="copy-btn" data-copy="pip install spolyrics" data-i18n="copy_btn">Copy</button>
+          <pre><code>pip install spolyrics</code></pre>
+        </div>
+        <p class="muted small" data-i18n-html="install_pip_note">If you get a <code>pip is not recognized</code> error, use <code>python -m pip install spolyrics</code>.</p>
+      </div>
+
+      <div class="install-card glass">
+        <h3 data-i18n="install_run_t">▶️ How to Run</h3>
+        <p class="muted" data-i18n="install_run_d">Once installed, launch it from any directory:</p>
+        <div class="code-block">
+          <button class="copy-btn" data-copy="spolyrics" data-i18n="copy_btn">Copy</button>
+          <pre><code>spolyrics</code></pre>
+        </div>
+        <p class="muted small" data-i18n-html="install_run_note">Or without a black terminal window: <code>pythonw -m main</code>. Make sure Spotify is playing a song! 🎵</p>
+      </div>
+    </div>
+
+    <div class="note glass" data-i18n-html="install_os_note">
+      <strong>⚠️ Important — OS Support:</strong> SpoLyrics is <strong>exclusive to Windows</strong>
+      (10/11). Because it uses <code>winsdk</code> for 0-delay performance without third-party servers,
+      it <strong>cannot</strong> be installed on macOS or Linux.
+    </div>
+
+    <div class="update-row">
+      <span class="muted" data-i18n="update_label">Update to the latest version:</span>
+      <div class="code-block inline">
+        <button class="copy-btn" data-copy="pip install --upgrade spolyrics" data-i18n="copy_btn">Copy</button>
+        <pre><code>pip install --upgrade spolyrics</code></pre>
+      </div>
+      <span class="muted" data-i18n="uninstall_label">Uninstall:</span>
+      <div class="code-block inline">
+        <button class="copy-btn" data-copy="pip uninstall spolyrics" data-i18n="copy_btn">Copy</button>
+        <pre><code>pip uninstall spolyrics</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta-card glass">
+      <h2 data-i18n="cta_title">Ready to sing along with your music? 🎶</h2>
+      <p data-i18n="cta_sub">Install SpoLyrics now and enjoy lyrics flowing perfectly with your music.</p>
+      <div class="cta-btns">
+        <a href="#install" class="btn btn-primary" data-i18n="cta_primary">Install Now</a>
+        <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="cta_ghost">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/icon.ico" alt="SpoLyrics" class="brand-logo" />
+        <span>SpoLyrics</span>
+      </div>
+      <p class="muted small" data-i18n="footer_tagline">A transparent, zero-delay Spotify lyrics miniplayer for Windows.</p>
+      <div class="footer-links">
+        <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/paturrr/SpoLyrics/issues" target="_blank" rel="noopener" data-i18n="footer_report">Report Issue</a>
+        <a href="#home" data-i18n="footer_top">Back to Top ↑</a>
+      </div>
+      <p class="muted tiny">© 2026 SpoLyrics · <span data-i18n="footer_license">MIT License</span></p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
