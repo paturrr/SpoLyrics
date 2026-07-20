@@ -345,23 +345,24 @@ a { color: inherit; text-decoration: none; }
 .dc-btn {
   width: 44px; height: 44px;
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.25);
   background: none;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.18s, transform 0.15s;
+  transition: color 0.18s, border-color 0.18s, transform 0.15s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-.dc-btn:hover { color: var(--text); }
+.dc-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.6); }
 .dc-btn:active { transform: scale(0.9); }
 .dc-btn svg { display: block; }
 .dc-play {
   width: 56px; height: 56px;
   color: var(--text);
+  border-color: rgba(255,255,255,0.5);
 }
-.dc-play:hover { color: var(--green-soft); }
+.dc-play:hover { color: var(--green-soft); border-color: var(--green-soft); }
 .dc-song {
   font-size: 0.8rem;
   color: var(--muted);
