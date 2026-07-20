@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.6"
+CURRENT_VERSION = "1.3.7"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -814,16 +814,18 @@ class MiniLyrics:
             bat_path = os.path.join(tempfile.gettempdir(), "update_spolyrics.bat")
             exe_path = get_exe_path()
             
-            # Extract arguments if get_exe_path returns pythonw.exe + main.py
-            exe_cmd = f'"{exe_path}"'
+            # Build restart command. get_exe_path() returns (pythonw.exe, "-m spolyrics").
+            # The module flag must NOT be quoted, otherwise pythonw treats "-m spolyrics"
+            # as a single filename and the restart silently fails.
             if isinstance(exe_path, tuple):
-                exe_cmd = f'"{exe_path[0]}" "{exe_path[1]}"'
+                exe_cmd = f'"{exe_path[0]}" {exe_path[1]}'
+            else:
+                exe_cmd = f'"{exe_path}"'
                 
             with open(bat_path, 'w') as f:
                 f.write('@echo off\n')
                 f.write('echo Updating SpoLyrics...\n')
                 f.write('ping 127.0.0.1 -n 3 > nul\n')
-                f.write('taskkill /f /im spolyrics.exe > nul 2>&1\n')
                 import sys
                 python_exe = os.path.join(os.path.dirname(sys.executable), "python.exe")
                 if not os.path.exists(python_exe):
@@ -832,6 +834,14 @@ class MiniLyrics:
                 f.write(f'start "" {exe_cmd}\n')
                 f.write('del "%~f0"\n')
             
+            # Safety net: refresh the Start Menu shortcut with the current path
+            # BEFORE exiting, so even if the auto-restart fails the user can still
+            # launch from Start Menu without retyping "spolyrics" in a terminal.
+            try:
+                create_shortcut()
+            except Exception as e:
+                logging.error("Failed to refresh shortcut before update", exc_info=e)
+
             # Run bat silently without creating a window
             import subprocess
             subprocess.Popen(['cmd.exe', '/c', bat_path], creationflags=0x08000000)
