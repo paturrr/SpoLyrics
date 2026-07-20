@@ -261,6 +261,16 @@ class MiniLyrics:
 
     def on_scroll(self, event):
         if self.is_pinned: return "break"
+        
+        now = time.time()
+        if not hasattr(self, 'last_scroll_time'):
+            self.last_scroll_time = 0
+            
+        if now - self.last_scroll_time < 0.8:
+            return "break"
+            
+        self.last_scroll_time = now
+        
         if event.delta > 0: self.media_control('prev')
         else: self.media_control('next')
         return "break"
