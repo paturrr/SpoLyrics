@@ -85,19 +85,25 @@ def save_config(config):
     with open(CONFIG_PATH, 'w') as f:
         json.dump(config, f)
 
-def set_auto_start(enable):
+def get_exe_path():
+    import sys
+    if getattr(sys, 'frozen', False):
+        return sys.executable
+    script_exe = os.path.join(sys.prefix, 'Scripts', 'spolyrics.exe')
+    if os.path.exists(script_exe):
+        return script_exe
+    return sys.executable
+
+def set_auto_start(enable, force_update=False):
     try:
         if enable:
             app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
             icon_path = os.path.join(app_dir, 'icon.ico')
-            import sys
-            if getattr(sys, 'frozen', False):
-                exe_path = sys.executable
-            else:
-                exe_path = shutil.which('spolyrics') or sys.executable
+            exe_path = get_exe_path()
             if exe_path and os.path.exists(icon_path):
-                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
-                subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
+                if force_update or not os.path.exists(STARTUP_SHORTCUT):
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
+                    subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
         else:
             if os.path.exists(STARTUP_SHORTCUT):
                 os.remove(STARTUP_SHORTCUT)
@@ -731,6 +737,7 @@ class MiniLyrics:
         asyncio.run(main_loop())
 
 def create_shortcut():
+    path_changed = False
     try:
         shortcut_path = os.path.join(os.environ.get("APPDATA", ""), "Microsoft", "Windows", "Start Menu", "Programs", "SpoLyrics.lnk")
         app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
@@ -747,17 +754,26 @@ def create_shortcut():
         if not os.path.exists(shortcut_path):
             needs_update = True
             
+        exe_path = get_exe_path()
+        path_file = os.path.join(app_dir, 'current_exe_path.txt')
+        saved_path = ""
+        if os.path.exists(path_file):
+            with open(path_file, 'r') as f:
+                saved_path = f.read().strip()
+                
+        if saved_path != exe_path:
+            needs_update = True
+            path_changed = True
+            with open(path_file, 'w') as f:
+                f.write(exe_path)
+            
         if needs_update:
-            import sys
-            if getattr(sys, 'frozen', False):
-                exe_path = sys.executable
-            else:
-                exe_path = shutil.which('spolyrics') or sys.executable
             if exe_path:
                 ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
     except Exception as e:
         logging.error("Failed to create shortcut", exc_info=e)
+    return path_changed
 
 def setup_tray(app):
     try:
@@ -804,9 +820,9 @@ def start_app():
     except Exception as e:
         logging.error("Failed to set DPI awareness", exc_info=e)
         
-    create_shortcut()
+    path_changed = create_shortcut()
     config = load_config()
-    set_auto_start(config['auto_start'])
+    set_auto_start(config['auto_start'], force_update=path_changed)
     
     app = MiniLyrics(config)
     setup_tray(app)
