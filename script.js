@@ -172,3 +172,20 @@ window.addEventListener('scroll', () => {
   if (window.scrollY > 40) navbar.style.boxShadow = '0 8px 32px rgba(0,0,0,0.6)';
   else navbar.style.boxShadow = '';
 });
+
+// ===== 5) Auto-fetch latest version from PyPI =====
+async function fetchLatestVersion() {
+  try {
+    const res = await fetch('https://pypi.org/pypi/spolyrics/json');
+    const data = await res.json();
+    if (data && data.info && data.info.version) {
+      const versionEl = document.getElementById('live-version');
+      if (versionEl) {
+        versionEl.textContent = data.info.version;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to fetch version from PyPI', e);
+  }
+}
+fetchLatestVersion();
