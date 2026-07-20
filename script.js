@@ -294,15 +294,22 @@ fetchLatestVersion();
     render();
   }
 
+  function setPlayIcon(isPlaying) {
+    const p = el.play.querySelector('.ic-play');
+    const q = el.play.querySelector('.ic-pause');
+    if (p) p.style.display = isPlaying ? 'none' : 'block';
+    if (q) q.style.display = isPlaying ? 'block' : 'none';
+  }
+
   function play() {
     if (playing) return;
     playing = true;
-    el.play.textContent = '⏸️';
+    setPlayIcon(true);
     timer = setInterval(tick, TICK);
   }
   function pause() {
     playing = false;
-    el.play.textContent = '▶️';
+    setPlayIcon(false);
     if (timer) clearInterval(timer);
     timer = null;
   }
@@ -314,7 +321,7 @@ fetchLatestVersion();
   }
 
   el.play.addEventListener('click', togglePlay);
-  el.next.parentElement && el.nextBtn.addEventListener('click', () => goto(idx + 1));
+  el.nextBtn.addEventListener('click', () => goto(idx + 1));
   el.prev.addEventListener('click', () => goto(idx - 1));
 
   render(); // initial paint
