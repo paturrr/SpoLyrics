@@ -26,7 +26,7 @@ from assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.2.6"
+CURRENT_VERSION = "1.2.7"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -100,15 +100,24 @@ def save_config(config):
 
 def get_exe_path():
     import sys
+    import os
     if getattr(sys, 'frozen', False):
         return sys.executable
+        
+    # Prefer pythonw.exe + main.py to avoid pip launcher bugs and console windows!
+    # In venv, pythonw.exe is usually in sys.prefix\Scripts
+    pythonw = os.path.join(sys.prefix, 'Scripts', 'pythonw.exe')
+    if not os.path.exists(pythonw):
+        pythonw = os.path.join(sys.prefix, 'pythonw.exe') # Global install
+        
+    if os.path.exists(pythonw):
+        return (pythonw, os.path.abspath(__file__))
+        
+    # Fallback to the pip launcher
     script_exe = os.path.join(sys.prefix, 'Scripts', 'spolyrics.exe')
     if os.path.exists(script_exe):
         return script_exe
-    
-    pythonw = os.path.join(sys.prefix, 'pythonw.exe')
-    if os.path.exists(pythonw):
-        return (pythonw, os.path.abspath(__file__))
+        
     return sys.executable
 
 def set_auto_start(enable, force_update=False):
