@@ -180,8 +180,8 @@ window.addEventListener('scroll', () => {
 // ===== 5) Auto-fetch latest version from PyPI =====
 async function fetchLatestVersion() {
   try {
-    const res = await fetch('https://pypi.org/pypi/spolyrics/json');
-    const data = await res.json();
+    const response = await fetch(`https://pypi.org/pypi/spolyrics/json?t=${new Date().getTime()}`);
+    const data = await response.json();
     if (data && data.info && data.info.version) {
       const versionEl = document.getElementById('live-version');
       if (versionEl) {
