@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.2.9"
+CURRENT_VERSION = "1.3.0"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -126,7 +126,7 @@ def set_auto_start(enable, force_update=False):
                 if force_update or not os.path.exists(STARTUP_SHORTCUT):
                     if isinstance(exe_path, tuple):
                         target, args = exe_path
-                        ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{target}';$s.Arguments='\"{args}\"';$s.IconLocation='{icon_path}';$s.Save()"
+                        ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{target}';$s.Arguments='{args}';$s.IconLocation='{icon_path}';$s.Save()"
                     else:
                         ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                     subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
@@ -874,7 +874,7 @@ def create_shortcut():
             if exe_path:
                 if isinstance(exe_path, tuple):
                     target, args = exe_path
-                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{target}';$s.Arguments='\"{args}\"';$s.IconLocation='{icon_path}';$s.Save()"
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{target}';$s.Arguments='{args}';$s.IconLocation='{icon_path}';$s.Save()"
                 else:
                     ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='{exe_path}';$s.IconLocation='{icon_path}';$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
