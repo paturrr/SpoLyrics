@@ -864,10 +864,31 @@ def setup_tray(app):
     except Exception as e:
         logging.error("Tray icon failed to load", exc_info=e)
 
+def check_single_instance():
+    mutex_name = "Global\\SpoLyrics_Mutex"
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, mutex_name)
+    last_error = ctypes.windll.kernel32.GetLastError()
+    
+    if last_error == 183:
+        from tkinter import messagebox
+        import sys
+        temp_root = tk.Tk()
+        temp_root.withdraw()
+        temp_root.attributes('-topmost', True)
+        res = messagebox.askyesno("Already Running", "SpoLyrics is already running in the background.\n\nAre you sure you want to open another instance?", parent=temp_root)
+        temp_root.destroy()
+        if not res:
+            sys.exit(0)
+    return mutex
+
 def start_app():
+    global _app_mutex
+    _app_mutex = check_single_instance()
+    
     try:
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
     except Exception as e:
+        logging.error("Failed to set DPI awareness", exc_info=e)
         logging.error("Failed to set DPI awareness", exc_info=e)
         
     path_changed = create_shortcut()
