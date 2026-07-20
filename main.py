@@ -177,6 +177,15 @@ class MiniLyrics:
             w.bind("<Control-MouseWheel>", self.on_font_scroll)
             w.bind("<Button-2>", self.toggle_pin)
 
+        self.current_song = ""
+        self.synced_lyrics = []
+        self.base_pos = 0.0
+        self.base_time = time.time()
+        self.is_playing = False
+        
+        self.render_lyrics()
+        threading.Thread(target=self.poll_song, daemon=True).start()
+
     def get_tray_menu(self):
         import pystray
         items = [
@@ -190,14 +199,6 @@ class MiniLyrics:
             items.insert(0, pystray.MenuItem("🔥 Update Available!", lambda: self.root.after(0, self.prompt_update)))
         return pystray.Menu(*items)
 
-        self.current_song = ""
-        self.synced_lyrics = []
-        self.base_pos = 0.0
-        self.base_time = time.time()
-        self.is_playing = False
-        
-        self.render_lyrics()
-        threading.Thread(target=self.poll_song, daemon=True).start()
 
     def render_lyrics(self):
         if self.synced_lyrics:
