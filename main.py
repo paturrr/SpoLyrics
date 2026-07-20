@@ -12,8 +12,10 @@ import logging
 import sqlite3
 from datetime import datetime, timezone
 from assets import ICON_B64
+from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
+CURRENT_VERSION = "1.2.2"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -144,6 +146,9 @@ class MiniLyrics:
         
         self.lbl_next = tk.Label(self.root, text="", fg='#b3b3b3', bg='#191414', font=('Arial', self.font_nxt), wraplength=330, justify="center")
         self.lbl_next.pack(expand=True, fill='both', padx=10, pady=(0, 15))
+        
+        self.update_available = False
+        self.root.after(2000, self.check_updates)
 
         self.grip = tk.Label(self.root, text="⇲", fg='#333333', bg='#191414', cursor="size_nw_se")
         self.grip.place(relx=1.0, rely=1.0, anchor="se")
@@ -736,6 +741,45 @@ class MiniLyrics:
                 
         asyncio.run(main_loop())
 
+    def check_updates(self):
+        def _check():
+            try:
+                resp = requests.get('https://pypi.org/pypi/spolyrics/json', timeout=5).json()
+                latest = resp['info']['version']
+                if latest != CURRENT_VERSION:
+                    self.root.after(0, self.show_update_prompt, latest)
+            except Exception as e:
+                logging.error("Failed to check for updates", exc_info=e)
+        threading.Thread(target=_check, daemon=True).start()
+        
+    def prompt_update(self):
+        if self.update_available:
+            self.show_update_prompt(self.update_available)
+            
+    def show_update_prompt(self, latest):
+        self.update_available = latest
+        if getattr(self, 'tray_icon', None):
+            self.tray_icon.update_menu()
+            
+        res = messagebox.askyesno("Update Available", f"A new version of SpoLyrics (v{latest}) is available!\n\nYou are currently on v{CURRENT_VERSION}.\nWould you like to update now?")
+        if res:
+            import tempfile
+            bat_path = os.path.join(tempfile.gettempdir(), "update_spolyrics.bat")
+            exe_path = get_exe_path()
+            with open(bat_path, 'w') as f:
+                f.write('@echo off\n')
+                f.write('echo Updating SpoLyrics...\n')
+                f.write('ping 127.0.0.1 -n 3 > nul\n')
+                f.write('python -m pip install --upgrade spolyrics\n')
+                f.write(f'start "" "{exe_path}"\n')
+                f.write('del "%~f0"\n')
+            subprocess.Popen(['cmd.exe', '/c', bat_path], creationflags=16)
+            if getattr(self, 'tray_icon', None):
+                self.tray_icon.stop()
+            self.root.quit()
+            import sys
+            sys.exit(0)
+
 def create_shortcut():
     path_changed = False
     try:
@@ -802,14 +846,20 @@ def setup_tray(app):
             logging.error("Failed to open tray icon image, using fallback", exc_info=e)
             image = Image.new('RGB', (64, 64), color = (29, 185, 84))
             
-        menu = pystray.Menu(
-            pystray.MenuItem("Shortcuts & Info", on_info),
-            pystray.MenuItem("Settings", on_settings),
-            pystray.MenuItem("Toggle Visibility", on_toggle_lyrics),
-            pystray.MenuItem("Quit", on_quit)
-        )
-        
-        icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu)
+        def get_menu():
+            items = [
+                pystray.MenuItem("Shortcuts & Info", on_info),
+                pystray.MenuItem("Settings", on_settings),
+                pystray.MenuItem("Toggle Visibility", on_toggle_lyrics),
+                pystray.MenuItem("Quit", on_quit),
+                pystray.MenuItem(f"v{CURRENT_VERSION}", lambda: None, enabled=False)
+            ]
+            if getattr(app, 'update_available', False):
+                items.insert(0, pystray.MenuItem("🔥 Update Available!", lambda: app.root.after(0, app.prompt_update)))
+            return pystray.Menu(*items)
+            
+        icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu=get_menu)
+        app.tray_icon = icon
         threading.Thread(target=icon.run, daemon=True).start()
     except Exception as e:
         logging.error("Tray icon failed to load", exc_info=e)
