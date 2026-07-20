@@ -2,12 +2,13 @@ from setuptools import setup
 
 setup(
     name='spolyrics',
-    version='1.2.8',
+    version='1.2.9',
     description='A minimalist, borderless, zero-delay synced lyrics miniplayer for Spotify on Windows.',
     long_description=open('README.md', 'r', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     author='SpoLyrics Team',
     packages=['spolyrics'],
+    scripts=['bin/spolyrics.bat'],
     python_requires='>=3.8',
     install_requires=[
         'winsdk',
