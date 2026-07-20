@@ -15,7 +15,7 @@ from assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.2.4"
+CURRENT_VERSION = "1.2.5"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -808,6 +808,7 @@ class MiniLyrics:
                 f.write('@echo off\n')
                 f.write('echo Updating SpoLyrics...\n')
                 f.write('ping 127.0.0.1 -n 3 > nul\n')
+                f.write('taskkill /f /im spolyrics.exe > nul 2>&1\n')
                 import sys
                 f.write(f'"{sys.executable}" -m pip install --upgrade --no-cache-dir spolyrics\n')
                 f.write(f'start "" {exe_cmd}\n')
