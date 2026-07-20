@@ -5,7 +5,8 @@
 <h1 align="center">SpoLyrics</h1>
 
 <p align="center">
-  <em>A minimalist, transparent, and zero-delay Spotify lyrics miniplayer.</em>
+  <em>A minimalist, transparent, and zero-delay Spotify lyrics miniplayer.</em><br>
+  <strong>🌐 <a href="https://paturrr.github.io/SpoLyrics/">Visit the Official Website</a></strong>
 </p>
 
 <p align="center">
@@ -55,6 +56,9 @@ I built this project to solve a specific complaint from my friends: they wanted 
   
 - **Advanced Customization (Settings)**
   Change lyrics color using a modern real-time custom HSV color picker, adjust window transparency (opacity), and enable "Auto-Start with Windows". All configurations are permanently saved.
+  
+- **Auto Update Checker**
+  Automatically checks for the newest version on PyPI when you launch the app, offering a seamless one-click update and restart experience.
 
 ## Invisible Controls
 
