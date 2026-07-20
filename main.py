@@ -177,6 +177,19 @@ class MiniLyrics:
             w.bind("<Control-MouseWheel>", self.on_font_scroll)
             w.bind("<Button-2>", self.toggle_pin)
 
+    def get_tray_menu(self):
+        import pystray
+        items = [
+            pystray.MenuItem("Shortcuts & Info", self.tray_callbacks['on_info']),
+            pystray.MenuItem("Settings", self.tray_callbacks['on_settings']),
+            pystray.MenuItem("Toggle Visibility", self.tray_callbacks['on_toggle_lyrics']),
+            pystray.MenuItem("Quit", self.tray_callbacks['on_quit']),
+            pystray.MenuItem(f"v{CURRENT_VERSION}", lambda: None, enabled=False)
+        ]
+        if getattr(self, 'update_available', False):
+            items.insert(0, pystray.MenuItem("🔥 Update Available!", lambda: self.root.after(0, self.prompt_update)))
+        return pystray.Menu(*items)
+
         self.current_song = ""
         self.synced_lyrics = []
         self.base_pos = 0.0
@@ -769,7 +782,7 @@ class MiniLyrics:
     def show_update_prompt(self, latest):
         self.update_available = latest
         if getattr(self, 'tray_icon', None):
-            self.tray_icon.update_menu()
+            self.tray_icon.menu = self.get_tray_menu()
             
         res = messagebox.askyesno("Update Available", f"A new version of SpoLyrics (v{latest}) is available!\n\nYou are currently on v{CURRENT_VERSION}.\nWould you like to update now?")
         if res:
@@ -835,8 +848,7 @@ def setup_tray(app):
         from PIL import Image
         
         def on_quit(icon, item):
-            icon.stop()
-            app.root.quit()
+            app.root.after(0, app.root.quit)
             
         def on_settings(icon, item):
             app.root.after(0, app.open_settings)
@@ -856,19 +868,23 @@ def setup_tray(app):
             logging.error("Failed to open tray icon image, using fallback", exc_info=e)
             image = Image.new('RGB', (64, 64), color = (29, 185, 84))
             
-        def get_menu():
-            items = [
-                pystray.MenuItem("Shortcuts & Info", on_info),
-                pystray.MenuItem("Settings", on_settings),
-                pystray.MenuItem("Toggle Visibility", on_toggle_lyrics),
-                pystray.MenuItem("Quit", on_quit),
-                pystray.MenuItem(f"v{CURRENT_VERSION}", lambda: None, enabled=False)
-            ]
-            if getattr(app, 'update_available', False):
-                items.insert(0, pystray.MenuItem("🔥 Update Available!", lambda: app.root.after(0, app.prompt_update)))
-            return pystray.Menu(*items)
+        app.tray_callbacks = {
+            'on_quit': on_quit,
+            'on_settings': on_settings,
+            'on_toggle_lyrics': on_toggle_lyrics,
+            'on_info': on_info
+        }
+        
+        app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
+        icon_path = os.path.join(app_dir, 'icon.ico')
+        
+        try:
+            image = Image.open(icon_path)
+        except Exception as e:
+            logging.error("Failed to open tray icon image, using fallback", exc_info=e)
+            image = Image.new('RGB', (64, 64), color = (29, 185, 84))
             
-        icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu=get_menu)
+        icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu=app.get_tray_menu())
         app.tray_icon = icon
         threading.Thread(target=icon.run, daemon=True).start()
     except Exception as e:
