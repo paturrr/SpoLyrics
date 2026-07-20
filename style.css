@@ -125,9 +125,17 @@ a { color: inherit; text-decoration: none; }
 .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
 .pill {
   font-size: 0.82rem; font-weight: 600; padding: 7px 13px;
+  display: inline-flex; align-items: center; gap: 7px;
   border-radius: 999px; background: rgba(29,185,84,0.12);
   border: 1px solid rgba(29,185,84,0.3); color: var(--green-soft);
 }
+.pill svg { width: 15px; height: 15px; flex-shrink: 0; }
+.pill span { line-height: 1; }
+.ico { flex-shrink: 0; }
+.card-ico svg, .section h3 svg, .about-card p svg, .warn-strong svg, .ctrl svg {
+  width: 1em; height: 1em; vertical-align: -0.15em;
+}
+.warn-strong { display: inline-flex; align-items: center; gap: 8px; color: var(--text); }
 .hero-title { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; font-weight: 800; }
 .grad {
   background: linear-gradient(135deg, var(--green-soft), #0bf07a);
@@ -167,9 +175,11 @@ a { color: inherit; text-decoration: none; }
 .card:hover { transform: translateY(-6px); border-color: rgba(29,185,84,0.5); }
 .card-ico {
   width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
-  font-size: 1.6rem; background: rgba(29,185,84,0.14); border: 1px solid rgba(29,185,84,0.3);
+  color: var(--green-soft);
+  background: rgba(29,185,84,0.14); border: 1px solid rgba(29,185,84,0.3);
   margin-bottom: 16px;
 }
+.card-ico svg { width: 26px; height: 26px; }
 .card h3 { font-size: 1.2rem; margin-bottom: 10px; }
 .card p { color: var(--muted); font-size: 0.95rem; }
 
