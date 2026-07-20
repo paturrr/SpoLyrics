@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.1"
+CURRENT_VERSION = "1.3.2"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -100,20 +100,6 @@ def save_config(config):
 
 def get_exe_path():
     import sys
-    import os
-    if getattr(sys, 'frozen', False):
-        return sys.executable
-        
-    # Prefer pythonw.exe + main.py to avoid pip launcher bugs and console windows!
-    # In venv, pythonw.exe is usually in sys.prefix\Scripts
-    pythonw = os.path.join(sys.prefix, 'Scripts', 'pythonw.exe')
-    if not os.path.exists(pythonw):
-        pythonw = os.path.join(sys.prefix, 'pythonw.exe') # Global install
-        
-    if os.path.exists(pythonw):
-        return (pythonw, "-m spolyrics")
-        
-    # Fallback to sys.executable
     return sys.executable
 
 def set_auto_start(enable, force_update=False):
@@ -838,7 +824,10 @@ class MiniLyrics:
                 f.write('ping 127.0.0.1 -n 3 > nul\n')
                 f.write('taskkill /f /im spolyrics.exe > nul 2>&1\n')
                 import sys
-                f.write(f'"{sys.executable}" -m pip install --upgrade --no-cache-dir spolyrics\n')
+                python_exe = os.path.join(os.path.dirname(sys.executable), "python.exe")
+                if not os.path.exists(python_exe):
+                    python_exe = sys.executable
+                f.write(f'"{python_exe}" -m pip install --upgrade --no-cache-dir spolyrics\n')
                 f.write(f'start "" {exe_cmd}\n')
                 f.write('del "%~f0"\n')
             
