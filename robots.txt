@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://paturrr.github.io/SpoLyrics/sitemap.xml
