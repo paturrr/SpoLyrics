@@ -340,4 +340,5 @@ fetchLatestVersion();
   el.prev.addEventListener('click', () => goto(idx - 1));
 
   render(); // initial paint
+  play(); // auto-start demo on page load
 })();
