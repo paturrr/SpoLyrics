@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.7"
+CURRENT_VERSION = "1.3.8"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -115,7 +115,7 @@ def set_auto_start(enable, force_update=False):
             if exe_path and os.path.exists(icon_path):
                 if force_update or not os.path.exists(STARTUP_SHORTCUT):
                     launcher_vbs = os.path.join(app_dir, 'launcher.vbs')
-                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='wscript.exe';$s.Arguments='\"\"{launcher_vbs}\"\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='wscript.exe';$s.Arguments='\"{launcher_vbs}\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
                     subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
         else:
             if os.path.exists(STARTUP_SHORTCUT):
@@ -900,7 +900,7 @@ def create_shortcut():
         
         if needs_update:
             try:
-                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='wscript.exe';$s.Arguments='\"\"{launcher_vbs}\"\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
+                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='wscript.exe';$s.Arguments='\"{launcher_vbs}\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
                 path_changed = True
             except:
