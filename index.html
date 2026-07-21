@@ -21,10 +21,8 @@
   <meta name="twitter:title" content="SpoLyrics — Zero-Delay Spotify Lyrics Miniplayer" />
   <meta name="twitter:description" content="A minimalist, transparent, 100% precise-sync Spotify lyrics miniplayer for Windows." />
   <meta name="twitter:image" content="assets/og-image.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/aos.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="assets/icon.ico" />
   <script type="application/ld+json">
@@ -93,14 +91,14 @@
       <span class="brand-name" id="brandName">SpoLyrics</span>
     </a>
     <nav class="nav-links">
-      <a href="#demo" data-i18n="nav_demo">Live Demo</a>
-      <a href="#fitur" data-i18n="nav_features">Features</a>
-      <a href="#kontrol" data-i18n="nav_controls">Controls</a>
-      <a href="#faq" data-i18n="nav_faq">FAQ</a>
-      <a href="#install" data-i18n="nav_install">Installation</a>
+      <a href="#demo" data-i18n="nav_demo"></a>
+      <a href="#fitur" data-i18n="nav_features"></a>
+      <a href="#kontrol" data-i18n="nav_controls"></a>
+      <a href="#faq" data-i18n="nav_faq"></a>
+      <a href="#install" data-i18n="nav_install"></a>
       <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener" class="nav-gh">GitHub</a>
     </nav>
-    <a href="#install" class="btn btn-primary btn-sm" data-i18n="nav_cta">Install</a>
+    <a href="#install" class="btn btn-primary btn-sm" data-i18n="nav_cta"></a>
     <div class="nav-actions">
       <div class="lang-switch">
         <button class="lang-btn active" data-lang="en">EN</button>
@@ -113,23 +111,18 @@
   <section class="hero" id="home">
     <div class="hero-inner">
       <div class="badges" data-aos="fade-up">
-        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>0-Delay Sync</span></span>
-        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="4" x2="9" y2="9"/></svg><span>Native Windows API</span></span>
-        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c1.5 0 2-1 2-2s-1-1.5-1-2.5 1-1.5 2.5-1.5h1A4 4 0 0 0 22 11c0-5-4.5-9-10-9z"/></svg><span>Glassmorphism UI</span></span>
+        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span data-i18n="badge_sync"></span></span>
+        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="4" x2="9" y2="9"/></svg><span data-i18n="badge_native"></span></span>
+        <span class="pill"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c1.5 0 2-1 2-2s-1-1.5-1-2.5 1-1.5 2.5-1.5h1A4 4 0 0 0 22 11c0-5-4.5-9-10-9z"/></svg><span data-i18n="badge_glass"></span></span>
       </div>
-      <h1 class="hero-title" data-i18n-html="hero_title" data-aos="fade-up">Spotify Lyrics <span class="grad">Zero Delay.</span><br />Zero Hassle.</h1>
-      <p class="hero-sub" data-i18n-html="hero_sub" data-aos="fade-up" data-aos-delay="80">
-        SpoLyrics is a Spotify lyrics miniplayer that is <strong>minimalist</strong>,
-        <strong>transparent</strong>, and <strong>100% precisely synced</strong> using
-        Windows System Media Transport Controls. Built with Python for a better
-        listening experience while you work.
-      </p>
+      <h1 class="hero-title" data-i18n-html="hero_title" data-aos="fade-up"></h1>
+      <p class="hero-sub" data-i18n-html="hero_sub" data-aos="fade-up" data-aos-delay="80"></p>
       <div class="hero-cta" data-aos="fade-up" data-aos-delay="160">
-        <a href="#install" class="btn btn-primary" data-i18n="hero_cta_primary">Start Installing</a>
-        <a href="#fitur" class="btn btn-ghost" data-i18n="hero_cta_ghost">See Features ▾</a>
+        <a href="#install" class="btn btn-primary" data-i18n="hero_cta_primary"></a>
+        <a href="#fitur" class="btn btn-ghost" data-i18n="hero_cta_ghost"></a>
       </div>
       <div class="hero-stats" data-aos="fade-up" data-aos-delay="240">
-        <div class="stat"><span class="stat-num" id="live-version">-</span><span class="stat-label" data-i18n="stat_version">Latest Version</span></div>
+        <div class="stat"><span class="stat-num" id="live-version">-</span><span class="stat-label" data-i18n="stat_version"></span></div>
         <div class="stat"><span class="stat-num">Py 3.8–3.12</span><span class="stat-label" data-i18n="stat_supported">Supported</span></div>
         <div class="stat"><span class="stat-num">MIT</span><span class="stat-label" data-i18n="stat_license">License</span></div>
         <div class="stat"><span class="stat-num">Windows 10/11</span><span class="stat-label" data-i18n="stat_exclusive">Exclusive</span></div>
@@ -143,27 +136,19 @@
   <!-- About -->
   <section class="about" id="about">
     <div class="about-card glass" data-aos="fade-up">
-      <h2 data-i18n="about_title" data-aos="fade-right">About the App</h2>
-      <p data-i18n="about_p1">
-        SpoLyrics was built to solve a simple complaint from friends: they wanted to
-        listen to songs on Spotify or YouTube Music while working, but the official
-        miniplayers didn't show any lyrics at all.
-      </p>
-      <p data-i18n-html="about_p2">
-        The app pulls duration data <strong>in real time directly from the Windows
-        system core</strong>, so lyrics sync is 100% precise without relying on any
-        third-party server. The result: lyrics flow along with the song, as smoothly as possible.
-      </p>
-      <p class="muted" data-i18n-html="about_p3">SpoLyrics masih dalam pengembangan aktif. Temukan bug atau punya ide? Jangan ragu buka issue di GitHub!</p>
+      <h2 data-i18n="about_title" data-aos="fade-right"></h2>
+      <p data-i18n="about_p1"></p>
+      <p data-i18n-html="about_p2"></p>
+      <p class="muted" data-i18n-html="about_p3"></p>
     </div>
   </section>
 
   <!-- Live Demo (interactive simulation) -->
   <section class="section" id="demo">
     <div class="section-head" data-aos="fade-right">
-      <span class="eyebrow" data-i18n="demo_eyebrow">Try It Now</span>
-      <h2 data-i18n="demo_title">Live Demo</h2>
-      <p class="section-sub" data-i18n="demo_sub">Curious how it feels? Play the interactive simulation below — no install needed.</p>
+      <span class="eyebrow" data-i18n="demo_eyebrow"></span>
+      <h2 data-i18n="demo_title"></h2>
+      <p class="section-sub" data-i18n="demo_sub"></p>
     </div>
 
     <div class="demo-wrap" data-aos="zoom-in" data-aos-delay="120">
@@ -192,7 +177,7 @@
           </button>
         </div>
         <div class="dc-song" id="dcSong">Demo Track 1 / 3</div>
-        <p class="muted small dc-hint" data-i18n="demo_hint">This is a visual simulation of the desktop app. The real app syncs live with your own Spotify.</p>
+        <p class="muted small dc-hint" data-i18n="demo_hint"></p>
       </div>
     </div>
   </section>
@@ -200,50 +185,50 @@
   <!-- Features -->
   <section class="section" id="fitur">
     <div class="section-head" data-aos="fade-right">
-      <span class="eyebrow" data-i18n="features_eyebrow">Why SpoLyrics?</span>
-      <h2 data-i18n="features_title">Key Features</h2>
-      <p class="section-sub" data-i18n="features_sub">Designed lean, fast, and elegant — only what you need.</p>
+      <span class="eyebrow" data-i18n="features_eyebrow"></span>
+      <h2 data-i18n="features_title"></h2>
+      <p class="section-sub" data-i18n="features_sub"></p>
     </div>
     <div class="grid">
       <article class="card glass" data-aos="fade-up" data-aos-delay="0">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-        <h3 data-i18n="feat1_t">Zero-Delay Sync</h3>
-        <p data-i18n="feat1_d">100% precise time sync. Pulls real-time duration data straight from the Windows OS core.</p>
+        <h3 data-i18n="feat1_t"></h3>
+        <p data-i18n="feat1_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="100">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
-        <h3 data-i18n="feat2_t">Smart Duration Match</h3>
-        <p data-i18n="feat2_d">Automatically matches lyrics based on the duration of the playing song version — fixes the Radio Edit vs Album Version mismatch.</p>
+        <h3 data-i18n="feat2_t"></h3>
+        <p data-i18n="feat2_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="200">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c1.5 0 2-1 2-2s-1-1.5-1-2.5 1-1.5 2.5-1.5h1A4 4 0 0 0 22 11c0-5-4.5-9-10-9z"/></svg></div>
-        <h3 data-i18n="feat3_t">Glassmorphism UI</h3>
-        <p data-i18n="feat3_d">Elegant, transparent, and borderless design. Blends beautifully with your desktop wallpaper.</p>
+        <h3 data-i18n="feat3_t"></h3>
+        <p data-i18n="feat3_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="300">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="5"/><line x1="12" y1="7" x2="12" y2="11"/></svg></div>
-        <h3 data-i18n="feat4_t">Freely Draggable</h3>
-        <p data-i18n="feat4_d">Left-click and hold anywhere to drag the lyrics window to your favorite spot.</p>
+        <h3 data-i18n="feat4_t"></h3>
+        <p data-i18n="feat4_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="0">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="16.5" y1="9.5" x2="7.5" y2="4.5"/><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.3 7 12 12 20.7 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></div>
-        <h3 data-i18n="feat5_t">System Tray Integration</h3>
-        <p data-i18n="feat5_d">Runs quietly in the background. Right-click the tray icon to open settings, hide lyrics, or view shortcuts.</p>
+        <h3 data-i18n="feat5_t"></h3>
+        <p data-i18n="feat5_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="100">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 0 1-4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 11 4.6V4.5a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V11a2 2 0 0 1 0 4z"/></svg></div>
-        <h3 data-i18n="feat6_t">Advanced Customization</h3>
-        <p data-i18n="feat6_d">Change lyric color (real-time HSV picker), adjust transparency, and enable "Auto-Start with Windows". Saved permanently.</p>
+        <h3 data-i18n="feat6_t"></h3>
+        <p data-i18n="feat6_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="200">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.5 9a9 9 0 0 1 14.8-3.4L23 10M1 14l4.7 4.4A9 9 0 0 0 20.5 15"/></svg></div>
-        <h3 data-i18n="feat7_t">Auto Update Checker</h3>
-        <p data-i18n="feat7_d">Automatically checks for the newest version on PyPI and offers a seamless 1-click update experience.</p>
+        <h3 data-i18n="feat7_t"></h3>
+        <p data-i18n="feat7_d"></p>
       </article>
       <article class="card glass" data-aos="fade-up" data-aos-delay="300">
         <div class="card-ico"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></div>
-        <h3 data-i18n="feat8_t">Smart Scroll Cooldown</h3>
-        <p data-i18n="feat8_d">Prevents accidental multi-skips with an 800ms debounce when scrolling through songs with your mouse wheel.</p>
+        <h3 data-i18n="feat8_t"></h3>
+        <p data-i18n="feat8_d"></p>
       </article>
     </div>
   </section>
@@ -251,19 +236,19 @@
   <!-- Invisible Controls -->
   <section class="section" id="kontrol">
     <div class="section-head" data-aos="fade-right">
-      <span class="eyebrow" data-i18n="controls_eyebrow">Little Secret</span>
-      <h2 data-i18n="controls_title">Invisible Controls</h2>
-      <p class="section-sub" data-i18n="controls_sub">A super clean UI with no conventional buttons. Use these mouse gestures:</p>
+      <span class="eyebrow" data-i18n="controls_eyebrow"></span>
+      <h2 data-i18n="controls_title"></h2>
+      <p class="section-sub" data-i18n="controls_sub"></p>
     </div>
     <div class="controls-grid" data-aos="fade-up">
-      <div class="ctrl glass"><code>Right Click</code><span data-i18n="ctrl1">Play / Pause</span></div>
-      <div class="ctrl glass"><code>Scroll Up/Down</code><span data-i18n="ctrl2">Next / Previous track</span></div>
-      <div class="ctrl glass"><code>Middle Click</code><span data-i18n="ctrl3">Toggle Pin / Lock jendela</span></div>
-      <div class="ctrl glass"><code>Ctrl + Left Click</code><span data-i18n="ctrl4">Toggle song title</span></div>
-      <div class="ctrl glass"><code>Ctrl + Scroll</code><span data-i18n="ctrl5">Increase / decrease font</span></div>
-      <div class="ctrl glass"><code>Drag ⇲ Bottom Right</code><span data-i18n="ctrl6">Resize the window</span></div>
-      <div class="ctrl glass"><code>Double Left Click</code><span data-i18n="ctrl7">Close the app</span></div>
-      <div class="ctrl glass"><code>3-Finger Tap</code><span data-i18n="ctrl8">Middle click (touchpad)</span></div>
+      <div class="ctrl glass"><code>Right Click</code><span data-i18n="ctrl1"></span></div>
+      <div class="ctrl glass"><code>Scroll Up/Down</code><span data-i18n="ctrl2"></span></div>
+      <div class="ctrl glass"><code>Middle Click</code><span data-i18n="ctrl3"></span></div>
+      <div class="ctrl glass"><code>Ctrl + Left Click</code><span data-i18n="ctrl4"></span></div>
+      <div class="ctrl glass"><code>Ctrl + Scroll</code><span data-i18n="ctrl5"></span></div>
+      <div class="ctrl glass"><code>Drag ⇲ Bottom Right</code><span data-i18n="ctrl6"></span></div>
+      <div class="ctrl glass"><code>Double Left Click</code><span data-i18n="ctrl7"></span></div>
+      <div class="ctrl glass"><code>3-Finger Tap</code><span data-i18n="ctrl8"></span></div>
     </div>
     <div class="controls-shot glass" data-aos="zoom-in" data-aos-delay="120">
       <img src="assets/2.png" alt="SpoLyrics modern settings and shortcuts" loading="lazy" />
@@ -273,30 +258,30 @@
   <!-- FAQ -->
   <section class="section" id="faq">
     <div class="section-head" data-aos="fade-right">
-      <span class="eyebrow">FAQ</span>
-      <h2>Frequently Asked Questions</h2>
-      <p class="section-sub">Quick answers about SpoLyrics.</p>
+      <span class="eyebrow" data-i18n="faq_eyebrow"></span>
+      <h2 data-i18n="faq_title"></h2>
+      <p class="section-sub" data-i18n="faq_sub"></p>
     </div>
     <div class="faq-list" data-aos="fade-up">
       <details class="faq-item glass">
-        <summary data-i18n="faq_q1">What is SpoLyrics?</summary>
-        <p data-i18n="faq_a1">SpoLyrics is a minimalist, transparent Spotify lyrics miniplayer for Windows with zero-delay sync, glassmorphism UI, and invisible keyboard controls.</p>
+        <summary data-i18n="faq_q1"></summary>
+        <p data-i18n="faq_a1"></p>
       </details>
       <details class="faq-item glass">
-        <summary data-i18n="faq_q2">How do I install SpoLyrics?</summary>
-        <p data-i18n="faq_a2">Install via <code>pip install spolyrics</code>. Requires Python 3.8–3.12 on Windows 10/11. Do not use Python 3.13.</p>
+        <summary data-i18n="faq_q2"></summary>
+        <p data-i18n-html="faq_a2"></p>
       </details>
       <details class="faq-item glass">
-        <summary data-i18n="faq_q3">Is SpoLyrics free?</summary>
-        <p data-i18n="faq_a3">Yes. SpoLyrics is open source under the MIT license and free to use.</p>
+        <summary data-i18n="faq_q3"></summary>
+        <p data-i18n="faq_a3"></p>
       </details>
       <details class="faq-item glass">
-        <summary data-i18n="faq_q4">Does it work with Spotify and YouTube Music?</summary>
-        <p data-i18n="faq_a4">Yes. It uses native Windows APIs for precise duration matching with both Spotify and YouTube Music.</p>
+        <summary data-i18n="faq_q4"></summary>
+        <p data-i18n="faq_a4"></p>
       </details>
       <details class="faq-item glass">
-        <summary data-i18n="faq_q5">Is SpoLyrics open source?</summary>
-        <p data-i18n="faq_a5">Yes. Source code is available on GitHub at <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener">github.com/paturrr/SpoLyrics</a>.</p>
+        <summary data-i18n="faq_q5"></summary>
+        <p data-i18n-html="faq_a5"></p>
       </details>
     </div>
   </section>
@@ -304,46 +289,46 @@
   <!-- Installation -->
   <section class="section" id="install">
     <div class="section-head" data-aos="fade-right">
-      <span class="eyebrow" data-i18n="install_eyebrow">Get Started</span>
-      <h2 data-i18n="install_title">How to Install</h2>
-      <p class="section-sub" data-i18n="install_sub">One command. Requires Python 3.8 – 3.12 (do NOT use 3.13!)</p>
+      <span class="eyebrow" data-i18n="install_eyebrow"></span>
+      <h2 data-i18n="install_title"></h2>
+      <p class="section-sub" data-i18n="install_sub"></p>
     </div>
 
     <div class="install-wrap" data-aos="fade-up">
       <div class="install-card glass">
-        <h3><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M12 15l-3-3a14 14 0 0 1 7-9c2 0 3 1 3 3a14 14 0 0 1-9 7z"/><circle cx="14.5" cy="9.5" r="1"/></svg> <span data-i18n="install_pip_t">Install via pip</span></h3>
-        <p class="muted" data-i18n="install_pip_d">Open Windows Terminal / Command Prompt and run:</p>
+        <h3><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M12 15l-3-3a14 14 0 0 1 7-9c2 0 3 1 3 3a14 14 0 0 1-9 7z"/><circle cx="14.5" cy="9.5" r="1"/></svg> <span data-i18n="install_pip_t"></span></h3>
+        <p class="muted" data-i18n="install_pip_d"></p>
         <div class="code-block">
-          <button class="copy-btn" data-copy="pip install spolyrics" data-i18n="copy_btn">Copy</button>
+          <button class="copy-btn" data-copy="pip install spolyrics" data-i18n="copy_btn"></button>
           <pre><code>pip install spolyrics</code></pre>
         </div>
-        <p class="muted small" data-i18n-html="install_pip_note">If you get a <code>pip is not recognized</code> error, use <code>python -m pip install spolyrics</code>.</p>
+        <p class="muted small" data-i18n-html="install_pip_note"></p>
       </div>
 
       <div class="install-card glass">
-        <h3><svg class="ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg> <span data-i18n="install_run_t">How to Run</span></h3>
-        <p class="muted" data-i18n="install_run_d">Once installed, launch it from any directory:</p>
+        <h3><svg class="ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg> <span data-i18n="install_run_t"></span></h3>
+        <p class="muted" data-i18n="install_run_d"></p>
         <div class="code-block">
-          <button class="copy-btn" data-copy="spolyrics" data-i18n="copy_btn">Copy</button>
+          <button class="copy-btn" data-copy="spolyrics" data-i18n="copy_btn"></button>
           <pre><code>spolyrics</code></pre>
         </div>
-        <p class="muted small">Or without a black terminal window: <code>pythonw -m main</code>. <span data-i18n="install_run_note">Make sure Spotify is playing a song!</span> <svg class="ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></p>
+        <p class="muted small" data-i18n-html="install_run_note"></p>
       </div>
     </div>
 
     <div class="note glass" data-aos="fade-up">
-      <strong class="warn-strong"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <span data-i18n="install_os_title">Important — OS Support:</span></strong> <span data-i18n="install_os_text">SpoLyrics is <strong>exclusive to Windows</strong> (10/11). Because it uses <code>winsdk</code> for 0-delay performance without third-party servers, it <strong>cannot</strong> be installed on macOS or Linux.</span>
+      <strong class="warn-strong"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <span data-i18n="install_os_title"></span></strong> <span data-i18n-html="install_os_text"></span>
     </div>
 
     <div class="update-row">
-      <span class="muted" data-i18n="update_label">Update to the latest version:</span>
+      <span class="muted" data-i18n="update_label"></span>
       <div class="code-block inline">
-        <button class="copy-btn" data-copy="pip install --upgrade spolyrics" data-i18n="copy_btn">Copy</button>
+        <button class="copy-btn" data-copy="pip install --upgrade spolyrics" data-i18n="copy_btn"></button>
         <pre><code>pip install --upgrade spolyrics</code></pre>
       </div>
-      <span class="muted" data-i18n="uninstall_label">Uninstall:</span>
+      <span class="muted" data-i18n="uninstall_label"></span>
       <div class="code-block inline">
-        <button class="copy-btn" data-copy="pip uninstall spolyrics" data-i18n="copy_btn">Copy</button>
+        <button class="copy-btn" data-copy="pip uninstall spolyrics" data-i18n="copy_btn"></button>
         <pre><code>pip uninstall spolyrics</code></pre>
       </div>
     </div>
@@ -352,11 +337,11 @@
   <!-- CTA -->
   <section class="cta" id="cta">
     <div class="cta-card glass" data-aos="fade-up">
-      <h2><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> <span data-i18n="cta_title">Ready to sing along with your music?</span></h2>
-      <p data-i18n="cta_sub">Install SpoLyrics now and enjoy lyrics flowing perfectly with your music.</p>
+      <h2><svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> <span data-i18n="cta_title"></span></h2>
+      <p data-i18n="cta_sub"></p>
       <div class="cta-btns">
-        <a href="#install" class="btn btn-primary" data-i18n="cta_primary">Install Now</a>
-        <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="cta_ghost">View on GitHub</a>
+        <a href="#install" class="btn btn-primary" data-i18n="cta_primary"></a>
+        <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener" class="btn btn-ghost" data-i18n="cta_ghost"></a>
       </div>
     </div>
   </section>
@@ -368,18 +353,18 @@
         <img src="assets/icon.ico" alt="SpoLyrics" class="brand-logo" />
         <span>SpoLyrics</span>
       </div>
-      <p class="muted small" data-i18n="footer_tagline">A transparent, zero-delay Spotify lyrics miniplayer for Windows.</p>
+      <p class="muted small" data-i18n="footer_tagline"></p>
       <div class="footer-links">
         <a href="https://github.com/paturrr/SpoLyrics" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/paturrr/SpoLyrics/issues" target="_blank" rel="noopener" data-i18n="footer_report">Report Issue</a>
-        <a href="#home" data-i18n="footer_top">Back to Top ↑</a>
+        <a href="https://github.com/paturrr/SpoLyrics/issues" target="_blank" rel="noopener" data-i18n="footer_report"></a>
+        <a href="#home" data-i18n="footer_top"></a>
       </div>
-      <p class="muted tiny">© 2026 SpoLyrics · <span data-i18n="footer_license">MIT License</span></p>
+      <p class="muted tiny">© 2026 SpoLyrics · <span data-i18n="footer_license"></span></p>
     </div>
   </footer>
 
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="script.js"></script>
-  <script src="assets/aos.js"></script>
   <button id="backToTop" aria-label="Back to top" title="Back to top">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
