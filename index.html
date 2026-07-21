@@ -36,7 +36,7 @@
   <header class="navbar glass">
     <a href="#home" class="brand">
       <img src="assets/icon.ico" alt="SpoLyrics" class="brand-logo" />
-      <span class="brand-name">SpoLyrics</span>
+      <span class="brand-name" id="brandName">SpoLyrics</span>
     </a>
     <nav class="nav-links">
       <a href="#demo" data-i18n="nav_demo">Live Demo</a>
@@ -296,6 +296,9 @@
 
   <script src="script.js"></script>
   <script src="assets/aos.js"></script>
+  <button id="backToTop" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
   <script>
     AOS.init({
       duration: 700,
@@ -304,6 +307,16 @@
       offset: 80,
       disable: function () { return window.innerWidth < 560; }
     });
+    (function(){
+      const btn = document.getElementById('backToTop');
+      if(!btn) return;
+      const show = ()=>{ btn.style.opacity = window.scrollY > 500 ? '1' : '0'; btn.style.pointerEvents = window.scrollY > 500 ? 'auto' : 'none'; };
+      window.addEventListener('scroll', show, {passive:true});
+      show();
+      btn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+      const brand = document.getElementById('brandName');
+      if(brand){ brand.style.cursor='pointer'; brand.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'})); }
+    })();
   </script>
 </body>
 </html>
