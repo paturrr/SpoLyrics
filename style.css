@@ -88,6 +88,8 @@ a { color: inherit; text-decoration: none; }
 .nav-gh:hover { background: rgba(29,185,84,0.15); border-color: var(--green); }
 
 @media (max-width: 560px) {
+  .nav-links { display: none !important; }
+  .nav-gh { display: none !important; }
   .nav-actions { margin-left: 0; }
   .navbar { padding: 10px 14px; gap: 8px; }
   .btn-sm { padding: 8px 14px; font-size: 0.85rem; border-radius: 10px; }
