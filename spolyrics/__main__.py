@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.8"
+CURRENT_VERSION = "1.3.9"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -202,12 +202,46 @@ class MiniLyrics:
         
         self.render_lyrics()
         threading.Thread(target=self.poll_song, daemon=True).start()
+        
+        self.ghost_mode = self.config.get('ghost_mode', False)
+        if self.ghost_mode:
+            self.root.after(200, lambda: self.toggle_ghost_mode(True, False))
+
+    def toggle_ghost_mode(self, state=None, save=True):
+        if state is None:
+            self.ghost_mode = not getattr(self, 'ghost_mode', False)
+        else:
+            self.ghost_mode = state
+            
+        try:
+            hwnd = ctypes.windll.user32.GetParent(self.root.winfo_id())
+            ex_style = ctypes.windll.user32.GetWindowLongW(hwnd, -20) # GWL_EXSTYLE
+            
+            if self.ghost_mode:
+                ex_style |= 0x00000020 # WS_EX_TRANSPARENT
+            else:
+                ex_style &= ~0x00000020
+                
+            ctypes.windll.user32.SetWindowLongW(hwnd, -20, ex_style)
+            
+            if save:
+                self.config['ghost_mode'] = self.ghost_mode
+                import json
+                with open(CONFIG_PATH, 'w') as f:
+                    json.dump(self.config, f)
+        except Exception as e:
+            logging.error("Failed to toggle ghost mode", exc_info=e)
 
     def get_tray_menu(self):
         import pystray
         items = [
             pystray.MenuItem("Shortcuts & Info", self.tray_callbacks['on_info']),
             pystray.MenuItem("Settings", self.tray_callbacks['on_settings']),
+            pystray.MenuItem(
+                "Ghost Mode (Click-Through)", 
+                lambda: self.root.after(0, self.toggle_ghost_mode), 
+                checked=lambda item: getattr(self, 'ghost_mode', False)
+            ),
             pystray.MenuItem("Toggle Visibility", self.tray_callbacks['on_toggle_lyrics']),
             pystray.MenuItem("Quit", self.tray_callbacks['on_quit']),
             pystray.MenuItem(f"v{CURRENT_VERSION}", lambda: None, enabled=False)
