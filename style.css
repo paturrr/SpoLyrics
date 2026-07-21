@@ -270,6 +270,7 @@ a { color: inherit; text-decoration: none; }
   gap: 14px;
   color: var(--text);
   position: relative;
+  padding-right: 46px;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after {
