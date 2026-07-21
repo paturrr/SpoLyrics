@@ -9,6 +9,7 @@ const translations = {
     nav_controls: 'Kontrol',
     nav_install: 'Instalasi',
     nav_cta: 'Pasang Sekarang',
+    nav_faq: 'FAQ',
     hero_title: 'Lirik Spotify <span class="grad">Tanpa Delay.</span><br />Tanpa Ribet.',
     hero_sub:
       'SpoLyrics adalah miniplayer lirik Spotify yang <strong>minimalis</strong>, <strong>transparan</strong>, dan <strong>sinkron presisi 100%</strong> menggunakan Windows System Media Transport Controls. Dibangun dengan Python untuk pengalaman mendengarkan yang lebih baik saat kamu bekerja.',
