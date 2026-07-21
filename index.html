@@ -38,16 +38,7 @@
       <img src="assets/icon.ico" alt="SpoLyrics" class="brand-logo" />
       <span class="brand-name" id="brandName">SpoLyrics</span>
     </a>
-    <button class="nav-toggle" aria-label="Menu" id="navToggle">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-    </button>
-    <nav class="nav-links">
-      <a href="#demo" data-i18n="nav_demo">Live Demo</a>
-      <a href="#fitur" data-i18n="nav_features">Features</a>
-      <a href="#kontrol" data-i18n="nav_controls">Controls</a>
-      <a href="#install" data-i18n="nav_install">Installation</a>
-      <a href="https://github.com/paturrr/SpoLyrics" class="nav-gh" target="_blank" rel="noopener">GitHub</a>
-    </nav>
+    <a href="#install" class="btn btn-primary btn-sm" data-i18n="nav_cta">Install</a>
     <div class="nav-actions">
       <div class="lang-switch">
         <button class="lang-btn active" data-lang="en">EN</button>
@@ -318,12 +309,6 @@
       btn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
       const brand = document.getElementById('brandName');
       if(brand){ brand.style.cursor='pointer'; brand.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'})); }
-      const toggle = document.getElementById('navToggle');
-      const links = document.querySelector('.nav-links');
-      if(toggle && links){
-        toggle.addEventListener('click', ()=>{ links.classList.toggle('open'); });
-        links.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=>{ links.classList.remove('open'); }));
-      }
     })();
   </script>
 </body>
