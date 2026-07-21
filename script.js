@@ -340,6 +340,17 @@ fetchLatestVersion();
   el.nextBtn.addEventListener('click', () => goto(idx + 1));
   el.prev.addEventListener('click', () => goto(idx - 1));
 
+  // FAQ single-open accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('toggle', () => {
+      if (item.open) {
+        document.querySelectorAll('.faq-item').forEach(other => {
+          if (other !== item && other.open) other.open = false;
+        });
+      }
+    });
+  });
+
   render(); // initial paint
   play(); // auto-start demo on page load
 })();
