@@ -26,7 +26,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.3.9"
+CURRENT_VERSION = "1.4.0"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -179,6 +179,7 @@ class MiniLyrics:
         self.root.bind("<MouseWheel>", self.on_scroll)
         self.root.bind("<Control-MouseWheel>", self.on_font_scroll)
         self.root.bind("<Button-2>", self.toggle_pin)
+        self.root.bind("<Shift-Button-1>", self.toggle_pin)
         self.root.bind("<Control-Button-1>", self.toggle_title)
         
         for lbl in (self.lbl_current, self.lbl_next, self.lbl_title):
@@ -192,6 +193,7 @@ class MiniLyrics:
             w.bind("<MouseWheel>", self.on_scroll)
             w.bind("<Control-MouseWheel>", self.on_font_scroll)
             w.bind("<Button-2>", self.toggle_pin)
+            w.bind("<Shift-Button-1>", self.toggle_pin)
 
         self.current_song = ""
         self.synced_lyrics = []

@@ -50,6 +50,9 @@ I built this project to solve a specific complaint from my friends: they wanted 
   
 - **Freely Draggable**
   Left-click and hold anywhere to drag the lyrics window wherever you like.
+
+- **Ghost Mode (Click-Through)**
+  Right-click the system tray icon to enable Ghost Mode. When active, the lyrics window becomes completely transparent to mouse clicks, allowing you to interact with other apps or games underneath without accidentally clicking the lyrics.
   
 - **System Tray Integration**
   Runs quietly in the background. Right-click the system tray icon (SpoLyrics logo) to access settings, hide the lyrics, or view shortcuts.
@@ -66,8 +69,8 @@ This application uses zero conventional buttons to keep the UI perfectly clean. 
 
 - `Right Click`: Play / Pause
 - `Mouse Scroll (Up/Down)`: Next / Previous track
-- `Middle Click (Scroll Wheel or 3-Finger Tap on Touchpad)`: Toggle Pin / Lock Window
-  - *When locked, the resize icon changes to a padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Middle click again to unlock.*
+- `Shift + Left Click` OR `Middle Click`: Toggle Pin / Lock Window
+  - *When locked, the resize icon changes to a padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Repeat the shortcut to unlock.*
 - `Ctrl + Left Click`: Toggle song title visibility
 - `Ctrl + Mouse Scroll`: Increase / Decrease font size
 - `Drag Bottom Right Corner (⇲)`: Resize the window
