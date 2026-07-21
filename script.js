@@ -84,6 +84,16 @@ const translations = {
     footer_top: 'Kembali ke Atas ↑',
     footer_license: 'Lisensi MIT',
     copy_btn: 'Copy',
+    faq_q1: 'Apa itu SpoLyrics?',
+    faq_a1: 'SpoLyrics adalah miniplayer lirik Spotify yang minimalis, transparan, dan memiliki sinkron presisi 100% untuk Windows dengan UI glassmorphism dan kontrol keyboard yang tak terlihat.',
+    faq_q2: 'Bagaimana cara menginstal SpoLyrics?',
+    faq_a2: 'Instal lewat pip install spolyrics. Membutuhkan Python 3.8–3.12 pada Windows 10/11. Jangan gunakan Python 3.13.',
+    faq_q3: 'Apakah SpoLyrics gratis?',
+    faq_a3: 'Ya. SpoLyrics bersifat open source di bawah lisensi MIT dan dapat digunakan secara gratis.',
+    faq_q4: 'Apakah ini berfungsi dengan Spotify dan YouTube Music?',
+    faq_a4: 'Ya. Aplikasi ini menggunakan native Windows APIs untuk pencocokan durasi yang presisi dengan Spotify maupun YouTube Music.',
+    faq_q5: 'Apakah SpoLyrics open source?',
+    faq_a5: 'Ya. Kode sumber tersedia di GitHub: github.com/paturrr/SpoLyrics di bawah lisensi MIT.',
   },
 };
 
