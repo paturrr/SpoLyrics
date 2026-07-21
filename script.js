@@ -27,7 +27,7 @@ const translations = {
     about_p2:
       'Aplikasi ini mengambil data durasi secara <strong>real-time langsung dari inti sistem Windows</strong>, sehingga sinkronisasi lirik presisi 100% tanpa bergantung pada server pihak ketiga. Hasilnya: lirik mengalir bersama lagu, sehalus mungkin.',
     about_p3:
-      '<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg> SpoLyrics masih dalam pengembangan aktif. Temukan bug atau punya ide? Jangan ragu buka issue di GitHub!',
+      'SpoLyrics masih dalam pengembangan aktif. Temukan bug atau punya ide? Jangan ragu buka issue di GitHub!',
     features_eyebrow: 'Kenapa SpoLyrics?',
     demo_eyebrow: 'Coba Sekarang',
     demo_title: 'Demo Langsung',
@@ -56,7 +56,7 @@ const translations = {
     controls_sub: 'UI super bersih tanpa tombol konvensional. Gunakan gestur mouse ini:',
     ctrl1: 'Play / Pause',
     ctrl2: 'Next / Previous track',
-    ctrl3: 'Toggle Pin / Lock jendela <svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+    ctrl3: 'Toggle Pin / Lock window',
     ctrl4: 'Toggle judul lagu',
     ctrl5: 'Perbesar / perkecil font',
     ctrl6: 'Ubah ukuran jendela',
