@@ -396,7 +396,7 @@ class MiniLyrics:
             
         self.info_win = tk.Toplevel(self.root)
         self.info_win.title("SpoLyrics Info")
-        self.info_win.geometry("420x400")
+        self.info_win.geometry("420x440")
         self.info_win.configure(bg='#191414')
         self.info_win.attributes('-topmost', True)
         self.info_win.overrideredirect(True)
@@ -422,7 +422,8 @@ class MiniLyrics:
         shortcuts = [
             ("🖱️ Left Click (Hold)", "Move Window"),
             ("🖱️ Right Click", "Play / Pause"),
-            ("🖱️ Middle Click / Shift+Click", "Lock & Ghost Mode (🔒)"),
+            ("🖱️ Middle Mouse Click", "Lock & Ghost Mode (🔒)"),
+            ("⌨️ Shift + Left Click", "Lock & Ghost Mode (Trackpad)"),
             ("🖱️ Middle Mouse Scroll", "Next / Previous Track"),
             ("🖱️ Double Left Click", "Quit Application"),
             ("⌨️ Ctrl + Left Click", "Show / Hide Title"),
