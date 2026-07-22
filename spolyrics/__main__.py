@@ -25,7 +25,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.4.0"
+CURRENT_VERSION = "1.4.1"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -212,6 +212,13 @@ class MiniLyrics:
         else:
             self.ghost_mode = state
             
+        self.is_pinned = self.ghost_mode
+        
+        if self.is_pinned:
+            self.grip.config(text="🔒", fg=self.config['color'], cursor="arrow")
+        else:
+            self.grip.config(text="⇲", fg='#333333', cursor="size_nw_se")
+
         try:
             hwnd = ctypes.windll.user32.GetParent(self.root.winfo_id())
             ex_style = ctypes.windll.user32.GetWindowLongW(hwnd, -20) # GWL_EXSTYLE
@@ -225,10 +232,44 @@ class MiniLyrics:
             
             if save:
                 self.config['ghost_mode'] = self.ghost_mode
+                import json
                 with open(CONFIG_PATH, 'w') as f:
                     json.dump(self.config, f)
         except Exception as e:
             logging.error("Failed to toggle ghost mode", exc_info=e)
+
+        if self.ghost_mode:
+            threading.Thread(target=self.monitor_ghost_unlock, daemon=True).start()
+
+    def toggle_pin(self, event=None):
+        self.toggle_ghost_mode()
+        return "break"
+
+    def monitor_ghost_unlock(self):
+        # Wait 500ms so initial click to enable lock isn't immediately misdetected as an unlock click
+        time.sleep(0.5)
+
+        class POINT(ctypes.Structure):
+            _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+        while getattr(self, 'ghost_mode', False):
+            time.sleep(0.04)
+            mbutton = ctypes.windll.user32.GetAsyncKeyState(0x04) & 0x8000
+            shift = ctypes.windll.user32.GetAsyncKeyState(0x10) & 0x8000
+            lbutton = ctypes.windll.user32.GetAsyncKeyState(0x01) & 0x8000
+
+            if mbutton or (shift and lbutton):
+                pt = POINT()
+                ctypes.windll.user32.GetCursorPos(ctypes.byref(pt))
+                wx = self.root.winfo_rootx()
+                wy = self.root.winfo_rooty()
+                ww = self.root.winfo_width()
+                wh = self.root.winfo_height()
+
+                if wx <= pt.x <= wx + ww and wy <= pt.y <= wy + wh:
+                    self.root.after(0, lambda: self.toggle_ghost_mode(False))
+                    time.sleep(0.4)
+                    break
 
     def get_tray_menu(self):
         import pystray
@@ -236,7 +277,7 @@ class MiniLyrics:
             pystray.MenuItem("Shortcuts & Info", self.tray_callbacks['on_info']),
             pystray.MenuItem("Settings", self.tray_callbacks['on_settings']),
             pystray.MenuItem(
-                "Ghost Mode (Click-Through)", 
+                "Lock & Ghost Mode (Click-Through)", 
                 lambda: self.root.after(0, self.toggle_ghost_mode), 
                 checked=lambda item: getattr(self, 'ghost_mode', False)
             ),
@@ -289,13 +330,7 @@ class MiniLyrics:
         self.lbl_title.config(text=self.current_song if self.show_title else "")
         return "break"
 
-    def toggle_pin(self, event):
-        self.is_pinned = not self.is_pinned
-        if self.is_pinned:
-            self.grip.config(text="🔒", fg=self.config['color'], cursor="arrow")
-        else:
-            self.grip.config(text="⇲", fg='#333333', cursor="size_nw_se")
-        return "break"
+
 
     def drag(self, event):
         if self.is_pinned or event.widget == self.grip: return "break"
@@ -387,7 +422,7 @@ class MiniLyrics:
         shortcuts = [
             ("🖱️ Left Click (Hold)", "Move Window"),
             ("🖱️ Right Click", "Play / Pause"),
-            ("🖱️ Middle Mouse Click", "Pin / Unpin Window (🔒)"),
+            ("🖱️ Middle Click / Shift+Click", "Lock & Ghost Mode (🔒)"),
             ("🖱️ Middle Mouse Scroll", "Next / Previous Track"),
             ("🖱️ Double Left Click", "Quit Application"),
             ("⌨️ Ctrl + Left Click", "Show / Hide Title"),

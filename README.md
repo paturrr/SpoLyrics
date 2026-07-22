@@ -69,8 +69,8 @@ This application uses zero conventional buttons to keep the UI perfectly clean. 
 
 - `Right Click`: Play / Pause
 - `Mouse Scroll (Up/Down)`: Next / Previous track
-- `Shift + Left Click` OR `Middle Click`: Toggle Pin / Lock Window
-  - *When locked, the resize icon changes to a padlock (🔒) and the app ignores all drags/clicks to prevent accidental touches. Repeat the shortcut to unlock.*
+- `Shift + Left Click` OR `Middle Click`: Toggle Lock & Ghost Mode (🔒)
+  - *When locked, the window becomes 100% click-through (pass-through clicks to apps underneath) and locks position. Repeat the shortcut over the lyrics to unlock.*
 - `Ctrl + Left Click`: Toggle song title visibility
 - `Ctrl + Mouse Scroll`: Increase / Decrease font size
 - `Drag Bottom Right Corner (⇲)`: Resize the window
