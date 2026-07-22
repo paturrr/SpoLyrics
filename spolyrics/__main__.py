@@ -11,7 +11,6 @@ import subprocess
 import logging
 import sqlite3
 import sys
-import ctypes
 from datetime import datetime, timezone
 
 # Hide any stray console window immediately
@@ -99,8 +98,6 @@ def save_config(config):
         json.dump(config, f)
 
 def get_exe_path():
-    import sys
-    import os
     pythonw = os.path.join(sys.prefix, 'Scripts', 'pythonw.exe')
     if not os.path.exists(pythonw):
         pythonw = os.path.join(sys.prefix, 'pythonw.exe')
@@ -228,7 +225,6 @@ class MiniLyrics:
             
             if save:
                 self.config['ghost_mode'] = self.ghost_mode
-                import json
                 with open(CONFIG_PATH, 'w') as f:
                     json.dump(self.config, f)
         except Exception as e:
