@@ -25,7 +25,7 @@ from .assets import ICON_B64
 from tkinter import messagebox
 from winsdk.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-CURRENT_VERSION = "1.4.2"
+CURRENT_VERSION = "1.4.3"
 CONFIG_PATH = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics", "config.json")
 APP_DIR = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
 os.makedirs(APP_DIR, exist_ok=True)
@@ -65,26 +65,26 @@ init_db()
 
 def get_cached_lyrics(title, artist, duration):
     try:
-        conn = sqlite3.connect(CACHE_DB_PATH)
-        c = conn.cursor()
-        c.execute("SELECT parsed_lyrics FROM lyrics WHERE artist=? AND title=? AND abs(duration - ?) <= 3", (artist.lower(), title.lower(), duration))
-        row = c.fetchone()
-        conn.close()
-        if row:
-            return json.loads(row[0])
+        with db_lock:
+            with sqlite3.connect(CACHE_DB_PATH, timeout=5) as conn:
+                c = conn.cursor()
+                c.execute("SELECT parsed_lyrics FROM lyrics WHERE artist=? AND title=? AND abs(duration - ?) <= 3", (artist.lower(), title.lower(), duration))
+                row = c.fetchone()
+                if row:
+                    return json.loads(row[0])
     except Exception as e:
         logging.error("Cache read error", exc_info=e)
     return None
 
+
 def save_cached_lyrics(title, artist, duration, parsed_lyrics):
     try:
         with db_lock:
-            conn = sqlite3.connect(CACHE_DB_PATH, timeout=5)
-            c = conn.cursor()
-            c.execute("INSERT INTO lyrics (artist, title, duration, parsed_lyrics) VALUES (?, ?, ?, ?)", 
-                      (artist.lower(), title.lower(), duration, json.dumps(parsed_lyrics)))
-            conn.commit()
-            conn.close()
+            with sqlite3.connect(CACHE_DB_PATH, timeout=5) as conn:
+                c = conn.cursor()
+                c.execute("INSERT INTO lyrics (artist, title, duration, parsed_lyrics) VALUES (?, ?, ?, ?)", 
+                          (artist.lower(), title.lower(), duration, json.dumps(parsed_lyrics)))
+                conn.commit()
     except Exception as e:
         logging.error("Cache write error", exc_info=e)
 
@@ -124,7 +124,10 @@ def set_auto_start(enable, force_update=False):
             if exe_path and os.path.exists(icon_path):
                 if force_update or not os.path.exists(STARTUP_SHORTCUT):
                     launcher_vbs = os.path.join(app_dir, 'launcher.vbs')
-                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{STARTUP_SHORTCUT}');$s.TargetPath='wscript.exe';$s.Arguments='\"{launcher_vbs}\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
+                    sc_ps = STARTUP_SHORTCUT.replace("'", "''")
+                    lv_ps = launcher_vbs.replace("'", "''")
+                    ic_ps = icon_path.replace("'", "''")
+                    ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{sc_ps}');$s.TargetPath='wscript.exe';$s.Arguments='\"{lv_ps}\"';$s.IconLocation='{ic_ps}';$s.WindowStyle=0;$s.Save()"
                     subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
         else:
             if os.path.exists(STARTUP_SHORTCUT):
@@ -277,7 +280,7 @@ class MiniLyrics:
                 self.toggle_ghost_mode(False)
                 return
 
-        self.root.after(40, self.monitor_ghost_unlock)
+        self.root.after(100, self.monitor_ghost_unlock)
 
     def get_tray_menu(self):
         import pystray
@@ -739,7 +742,10 @@ class MiniLyrics:
                     await current.try_skip_next_async()
                 elif action == 'prev':
                     await current.try_skip_previous_async()
-        threading.Thread(target=lambda: asyncio.run(do_action())).start()
+        if getattr(self, 'loop', None) and self.loop.is_running():
+            asyncio.run_coroutine_threadsafe(do_action(), self.loop)
+        else:
+            threading.Thread(target=lambda: asyncio.run(do_action()), daemon=True).start()
         return "break"
 
     def fetch_smart_lyrics(self, title, artist, actual_duration):
@@ -806,6 +812,7 @@ class MiniLyrics:
 
     def poll_song(self):
         async def main_loop():
+            self.loop = asyncio.get_running_loop()
             sessions = await MediaManager.request_async()
             
             while True:
@@ -976,7 +983,10 @@ def create_shortcut():
         
         if needs_update:
             try:
-                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{shortcut_path}');$s.TargetPath='wscript.exe';$s.Arguments='\"{launcher_vbs}\"';$s.IconLocation='{icon_path}';$s.WindowStyle=0;$s.Save()"
+                sc_ps = shortcut_path.replace("'", "''")
+                lv_ps = launcher_vbs.replace("'", "''")
+                ic_ps = icon_path.replace("'", "''")
+                ps_script = f"$s=(New-Object -COM WScript.Shell).CreateShortcut('{sc_ps}');$s.TargetPath='wscript.exe';$s.Arguments='\"{lv_ps}\"';$s.IconLocation='{ic_ps}';$s.WindowStyle=0;$s.Save()"
                 subprocess.run(["powershell", "-Command", ps_script], creationflags=0x08000000)
                 path_changed = True
             except:
@@ -1018,15 +1028,7 @@ def setup_tray(app):
             'on_info': on_info
         }
         
-        app_dir = os.path.join(os.environ.get("APPDATA", ""), "SpoLyrics")
-        icon_path = os.path.join(app_dir, 'icon.ico')
-        
-        try:
-            image = Image.open(icon_path)
-        except Exception as e:
-            logging.error("Failed to open tray icon image, using fallback", exc_info=e)
-            image = Image.new('RGB', (64, 64), color = (29, 185, 84))
-            
+    
         icon = pystray.Icon("SpoLyrics", image, "SpoLyrics", menu=app.get_tray_menu())
         app.tray_icon = icon
         threading.Thread(target=icon.run, daemon=True).start()
@@ -1057,7 +1059,6 @@ def start_app():
     try:
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
     except Exception as e:
-        logging.error("Failed to set DPI awareness", exc_info=e)
         logging.error("Failed to set DPI awareness", exc_info=e)
         
     path_changed = create_shortcut()
