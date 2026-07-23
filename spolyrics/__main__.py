@@ -35,6 +35,18 @@ ICON_PATH = os.path.join(APP_DIR, "icon.ico")
 
 logging.basicConfig(filename=LOG_PATH, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Win32 Constants
+GWL_EXSTYLE = -20
+WS_EX_TRANSPARENT = 0x00000020
+VK_LBUTTON = 0x01
+VK_MBUTTON = 0x04
+VK_SHIFT = 0x10
+KEY_PRESSED_MASK = 0x8000
+CREATE_NO_WINDOW = 0x08000000
+
+class POINT(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
 CACHE_DB_PATH = os.path.join(APP_DIR, "lyrics_cache.db")
 db_lock = threading.Lock()
 def init_db():
@@ -221,14 +233,14 @@ class MiniLyrics:
 
         try:
             hwnd = ctypes.windll.user32.GetParent(self.root.winfo_id())
-            ex_style = ctypes.windll.user32.GetWindowLongW(hwnd, -20) # GWL_EXSTYLE
+            ex_style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
             
             if self.ghost_mode:
-                ex_style |= 0x00000020 # WS_EX_TRANSPARENT
+                ex_style |= WS_EX_TRANSPARENT
             else:
-                ex_style &= ~0x00000020
+                ex_style &= ~WS_EX_TRANSPARENT
                 
-            ctypes.windll.user32.SetWindowLongW(hwnd, -20, ex_style)
+            ctypes.windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, ex_style)
             
             if save:
                 self.config['ghost_mode'] = self.ghost_mode
@@ -239,37 +251,33 @@ class MiniLyrics:
             logging.error("Failed to toggle ghost mode", exc_info=e)
 
         if self.ghost_mode:
-            threading.Thread(target=self.monitor_ghost_unlock, daemon=True).start()
+            self.root.after(500, self.monitor_ghost_unlock)
 
     def toggle_pin(self, event=None):
         self.toggle_ghost_mode()
         return "break"
 
     def monitor_ghost_unlock(self):
-        # Wait 500ms so initial click to enable lock isn't immediately misdetected as an unlock click
-        time.sleep(0.5)
+        if not getattr(self, 'ghost_mode', False):
+            return
 
-        class POINT(ctypes.Structure):
-            _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+        mbutton = ctypes.windll.user32.GetAsyncKeyState(VK_MBUTTON) & KEY_PRESSED_MASK
+        shift = ctypes.windll.user32.GetAsyncKeyState(VK_SHIFT) & KEY_PRESSED_MASK
+        lbutton = ctypes.windll.user32.GetAsyncKeyState(VK_LBUTTON) & KEY_PRESSED_MASK
 
-        while getattr(self, 'ghost_mode', False):
-            time.sleep(0.04)
-            mbutton = ctypes.windll.user32.GetAsyncKeyState(0x04) & 0x8000
-            shift = ctypes.windll.user32.GetAsyncKeyState(0x10) & 0x8000
-            lbutton = ctypes.windll.user32.GetAsyncKeyState(0x01) & 0x8000
+        if mbutton or (shift and lbutton):
+            pt = POINT()
+            ctypes.windll.user32.GetCursorPos(ctypes.byref(pt))
+            wx = self.root.winfo_rootx()
+            wy = self.root.winfo_rooty()
+            ww = self.root.winfo_width()
+            wh = self.root.winfo_height()
 
-            if mbutton or (shift and lbutton):
-                pt = POINT()
-                ctypes.windll.user32.GetCursorPos(ctypes.byref(pt))
-                wx = self.root.winfo_rootx()
-                wy = self.root.winfo_rooty()
-                ww = self.root.winfo_width()
-                wh = self.root.winfo_height()
+            if wx <= pt.x <= wx + ww and wy <= pt.y <= wy + wh:
+                self.toggle_ghost_mode(False)
+                return
 
-                if wx <= pt.x <= wx + ww and wy <= pt.y <= wy + wh:
-                    self.root.after(0, lambda: self.toggle_ghost_mode(False))
-                    time.sleep(0.4)
-                    break
+        self.root.after(40, self.monitor_ghost_unlock)
 
     def get_tray_menu(self):
         import pystray
